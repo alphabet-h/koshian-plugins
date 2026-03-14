@@ -36,7 +36,7 @@ NFD は Linghao Zhang の論文 "[Nurture-First Agent Development](https://arxiv
 ### 2. プラグインをインストール
 
 ```
-/plugin install claude-nfd@alphabet-h-koshian-plugins
+/plugin install claude-nfd@koshian-plugins
 ```
 
 インストール後、`/nfd-init` でNFD基盤を構築し、`/nfd-help` で次のステップを確認できます。
