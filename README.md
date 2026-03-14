@@ -1,11 +1,11 @@
-# Claude Plugins
+# Koshian Plugins
 
 Claude Code プラグインのマーケットプレイスリポジトリ。
 
 ## インストール
 
 ```bash
-/plugin marketplace add alphabet-h/claude-plugins
+/plugin marketplace add alphabet-h/koshian-plugins
 ```
 
 ## プラグイン一覧
