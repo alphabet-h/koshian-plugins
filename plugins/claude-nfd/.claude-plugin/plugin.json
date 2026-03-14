@@ -1,0 +1,10 @@
+{
+  "name": "claude-nfd",
+  "version": "0.1.0",
+  "description": "Nurture-First Development (NFD) workflow plugin — Knowledge Crystallization Cycle for Claude Code",
+  "author": {
+    "name": "koshian"
+  },
+  "repository": "https://github.com/alphabet-h/claude-nfd",
+  "keywords": ["nfd", "knowledge-crystallization", "nurture-first-development", "workflow"]
+}

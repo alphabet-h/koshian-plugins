@@ -1,0 +1,16 @@
+{
+  "name": "claude-plugins",
+  "owner": {
+    "name": "koshian"
+  },
+  "metadata": {
+    "description": "Claude Code plugins by koshian"
+  },
+  "plugins": [
+    {
+      "name": "claude-nfd",
+      "source": "./plugins/claude-nfd",
+      "description": "Nurture-First Development (NFD) workflow — Knowledge Crystallization Cycle for Claude Code"
+    }
+  ]
+}
