@@ -1,7 +1,7 @@
 ---
 name: crystallize
 description: This skill should be used when the user asks to "crystallize", "結晶化", "結晶化して", "パターンを抽出して", "経験を整理して", "セッションデータを分析して", "KCCを実行して", "run crystallization", "extract patterns from experience", "convert traces to skills", "analyze session data for patterns", "run KCC", or mentions knowledge crystallization, NFD crystallization cycle, or pattern extraction from operational data. Provides a structured 8-step process for extracting reusable knowledge from experiential data.
-version: 0.1.0
+version: 0.1.1
 ---
 
 # Knowledge Crystallization（知識の結晶化）
@@ -31,7 +31,7 @@ NFDのデュアルワークスペース・パターンに従い、結晶化は *
    - スキル化: `.claude/skills/<skill-name>/SKILL.md` に手順とガイダンスを記述
 4. 統合後、動作を確認してプロジェクトリポジトリにコミットする
 
-結晶化セッションの成果はNFDリポジトリ（`.nfd/`）に自動コミットされる。ロールバックが必要な場合は `git -C .nfd log` で履歴確認、`git -C .nfd revert <commit>` で戻せる。
+結晶化セッションの成果はNFDリポジトリに自動コミットされる。ロールバックが必要な場合は `git -C <nfd-dir> log` で履歴確認、`git -C <nfd-dir> revert <commit>` で戻せる。
 
 ## 結晶化の8ステップ
 
@@ -41,9 +41,11 @@ NFDのデュアルワークスペース・パターンに従い、結晶化は *
 2. `crystallization-log.md` から前回の処理位置を確認する
 3. インクリメンタル処理のため、前回の処理位置以降のデータのみを対象とする
 
-設定ファイルが見つからない場合は、プロジェクトルートから以下のパターンで探索する:
-- `.nfd/config.md`
-- Glob `**/nfd/config.md` で汎用的に探索
+設定ファイルが見つからない場合は、プロジェクトルートから以下の順で探索する:
+1. `.nfd/config.md`（デフォルトパス）
+2. Glob `**/config.md` で `nfd_dir` フロントマターを持つファイルを探索
+
+見つかった `config.md` の `nfd_dir` の値を `<nfd-dir>` として、以降のすべてのパスに使用する。
 
 ### Step 2: データソースの判定と収集
 

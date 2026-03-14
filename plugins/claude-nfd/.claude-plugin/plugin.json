@@ -1,6 +1,6 @@
 {
   "name": "claude-nfd",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Nurture-First Development (NFD) workflow plugin — Knowledge Crystallization Cycle for Claude Code",
   "author": {
     "name": "koshian"

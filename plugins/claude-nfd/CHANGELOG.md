@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
+## [0.1.1] - 2026-03-14
+
+### Fixed
+
+- NFDディレクトリのパスをハードコードから動的解決に変更（`config.md` の `nfd_dir` を参照）
+- デュアルワークスペースの説明を明確化（認知コンテキスト分離 ≠ ファイルシステム分離）
+- `plugin.json` の `repository` を正しいマーケットプレイスリポジトリに修正
+
 ## [0.1.0] - 2026-03-14
 
 Initial release.
