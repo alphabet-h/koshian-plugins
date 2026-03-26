@@ -143,8 +143,11 @@ features.json の status を "passing" に更新
 
 ## 参考文献
 
+本プラグインのガイドラインやベストプラクティスは、以下の公開ブログ記事・研究から着想を得て、独自に要約・再構成したものです。各社の原文の表現をそのまま使用している箇所があります。
+
 - [Building effective agents — Anthropic](https://www.anthropic.com/engineering/building-effective-agents)
 - [Context engineering for AI agents — Manus](https://manus.im/blog/Context-Engineering-for-AI-Agents-Lessons-from-Building-Manus)
-- [Harness Design in AI Coding Agents — LangChain](https://blog.langchain.dev/harness-design-in-ai-coding-agents-what-the-research-shows/)
+- [Improving deep agents with harness engineering — LangChain](https://blog.langchain.com/improving-deep-agents-with-harness-engineering/)
 - [Codex — OpenAI](https://openai.com/index/introducing-codex/)
-- [How Stripe built an AI coding agent — Stripe](https://stripe.com/blog/how-stripe-built-an-ai-coding-agent)
+- [Minions: Stripe's one-shot end-to-end coding agents (Part 1)](https://stripe.dev/blog/minions-stripes-one-shot-end-to-end-coding-agents)
+- [Minions: Stripe's one-shot end-to-end coding agents (Part 2)](https://stripe.dev/blog/minions-stripes-one-shot-end-to-end-coding-agents-part-2)
