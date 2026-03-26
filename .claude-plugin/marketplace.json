@@ -11,6 +11,11 @@
       "name": "claude-nfd",
       "source": "./plugins/claude-nfd",
       "description": "Nurture-First Development (NFD) workflow — Knowledge Crystallization Cycle for Claude Code"
+    },
+    {
+      "name": "harness-kit",
+      "source": "./plugins/harness-kit",
+      "description": "Generator-Evaluator pattern harness for long-running development tasks with multi-agent quality assurance"
     }
   ]
 }
