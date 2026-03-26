@@ -1,0 +1,11 @@
+{
+  "name": "harness-kit",
+  "version": "0.1.0",
+  "description": "Generator-Evaluatorパターンによる長時間開発ハーネス。Anthropicの研究に基づくマルチエージェント品質保証ワークフローを提供する。",
+  "author": {
+    "name": "koshian"
+  },
+  "repository": "https://github.com/alphabet-h/koshian-plugins",
+  "keywords": ["harness", "generator-evaluator", "quality-assurance", "long-running-tasks"],
+  "autoDiscover": true
+}

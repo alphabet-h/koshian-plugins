@@ -1,0 +1,14 @@
+{
+  "hooks": {
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "prompt",
+            "prompt": "作業が完了する前に確認してください: features.json が存在する場合、今回の作業で status を更新すべき機能はありますか？また、claude-progress.txt に今回の作業内容を追記してください。evaluator エージェントによる品質チェックがまだの場合は、ユーザーに提案してください。"
+          }
+        ]
+      }
+    ]
+  }
+}
