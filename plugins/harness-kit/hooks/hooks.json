@@ -5,7 +5,7 @@
         "hooks": [
           {
             "type": "prompt",
-            "prompt": "作業が完了する前に確認してください: features.json が存在する場合、今回の作業で status を更新すべき機能はありますか？また、claude-progress.txt に今回の作業内容を追記してください。evaluator エージェントによる品質チェックがまだの場合は、ユーザーに提案してください。"
+            "prompt": "作業が完了する前に確認してください: まずプロジェクトルート（カレントワーキングディレクトリ）で Glob ツールを使い features.json と claude-progress.txt の存在を確認してください。これらのファイルが存在する場合: (1) features.json 内で今回の作業に関連する機能の status を更新すべきか確認し、必要なら更新してください。(2) claude-progress.txt に今回の作業内容を追記してください。(3) evaluator エージェントによる品質チェックがまだの場合は、ユーザーに提案してください。ファイルが見つからない場合は、harness-kit:harness-init スキルでの初期化を提案してください。"
           }
         ]
       }

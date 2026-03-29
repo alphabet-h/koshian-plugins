@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
+## [0.1.1] - 2026-03-30
+
+### Fixed
+
+- Stop hook のファイルパス解決を改善 — Glob ツールによる明示的なファイル存在確認とプロジェクトルート（CWD）での検索指示を追加し、導入先プロジェクトで `features.json` / `claude-progress.txt` が見つからないエラーを修正
+
 ## [0.1.0] - 2026-03-26
 
 Initial release.
