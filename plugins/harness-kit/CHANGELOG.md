@@ -4,6 +4,15 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
+## [0.2.0] - 2026-04-18
+
+### Changed
+
+- Stop フックを prompt 型から command 型（`hooks/stop-reminder.sh`）へ置き換え。以下の条件で **サイレント終了** するようゲートを追加し、ループと空プロジェクトへの誤発火を解消:
+  - `stop_hook_active=true` のとき（Stop フック自身による再起動時）
+  - プロジェクトルートに `features.json` も `claude-progress.txt` も存在しないとき
+- リマインド文言に「成果物の変更を伴わないターンでは停止してよい」旨を明示し、質問応答のみのターンでの不要な継続を抑制
+
 ## [0.1.1] - 2026-03-30
 
 ### Fixed

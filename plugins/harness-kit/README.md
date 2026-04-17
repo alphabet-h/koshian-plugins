@@ -93,10 +93,14 @@ Anthropic の研究では5〜15イテレーションで質的転換（創造的�
 
 ### Stop フック
 
-セッション終了時に以下を自動リマインド:
+ターン終了時に以下を自動リマインド:
 - `features.json` の status 更新
 - `claude-progress.txt` への作業内容追記
 - evaluator による品質チェックの提案
+
+**発火条件（ゲート）:** 以下のいずれかを満たす場合はリマインドせず静かに終了する。
+- プロジェクトルートに `features.json` も `claude-progress.txt` も存在しない（= harness 未初期化プロジェクト）
+- 直前の Stop フックが起因で Claude が再起動した状態（`stop_hook_active=true`、ループ防止）
 
 ## 使い方
 
