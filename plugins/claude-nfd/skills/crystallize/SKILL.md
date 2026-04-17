@@ -1,7 +1,6 @@
 ---
 name: crystallize
 description: This skill should be used when the user asks to "crystallize", "結晶化", "結晶化して", "パターンを抽出して", "経験を整理して", "セッションデータを分析して", "KCCを実行して", "run crystallization", "extract patterns from experience", "convert traces to skills", "analyze session data for patterns", "run KCC", or mentions knowledge crystallization, NFD crystallization cycle, or pattern extraction from operational data. Provides a structured 8-step process for extracting reusable knowledge from experiential data.
-version: 0.1.1
 ---
 
 # Knowledge Crystallization（知識の結晶化）
