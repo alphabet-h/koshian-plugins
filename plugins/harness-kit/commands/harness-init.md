@@ -1,6 +1,8 @@
 ---
 name: harness-init
 description: プロジェクトにハーネス管理ファイル（features.json、claude-progress.txt）をスキャフォールドする
+allowed-tools: Read, Write, Edit, Glob, Grep, Bash(git:*, test:*, ls:*, cat:*), AskUserQuestion
+disable-model-invocation: true
 ---
 
 # /harness-init

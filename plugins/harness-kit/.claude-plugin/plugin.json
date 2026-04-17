@@ -1,6 +1,6 @@
 {
   "name": "harness-kit",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Generator-Evaluatorパターンによる長時間開発ハーネス。Anthropicの研究に基づくマルチエージェント品質保証ワークフローを提供する。",
   "author": {
     "name": "koshian"

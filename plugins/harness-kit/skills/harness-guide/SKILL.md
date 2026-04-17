@@ -1,6 +1,6 @@
 ---
 name: harness-guide
-description: 長時間開発タスクでのハーネス設計ガイド。Generator-Evaluatorパターン、セッション間永続化、コンテキスト管理、features.json管理のベストプラクティスを提供する。「ハーネス」「長時間タスク」「イテレーション」「features.json」「進捗管理」「セッション初期化」「コンテキスト管理」等のキーワードで起動する。開発タスクが長時間に及ぶ場合や、品質のイテレーションが必要な場合に積極的に使うこと。
+description: 長時間開発タスクのハーネス設計ガイド。Generator-Evaluatorパターン、セッション間永続化、コンテキスト管理、features.json/claude-progress.txt 運用、Stripe型決定論ノード交互配置、Manus 5原則（ツールマスク/外部メモリ/タスク反復/エラー保持/可逆圧縮）などのベストプラクティスを提供する。Anthropic・Manus・LangChain・OpenAI Codex・Stripe Minionsの研究に基づく。「ハーネス」「harness」「長時間タスク」「イテレーション」「features.json」「claude-progress」「進捗管理」「セッション初期化」「コンテキスト管理」「コンテキストリセット」「サマリゼーション」「外部アーティファクト」「Generator-Evaluator」「自己評価バイアス」「writer/reviewer」「決定論ノード」「planner」「evaluator」「リトライ」「完了ゲート」「マルチエージェント」「Build to Delete」等のキーワードで起動する。開発タスクが長時間に及ぶ場合、品質のイテレーションが必要な場合、新セッション立ち上げ時、コンテキストが肥大化している場合、エージェントが自己評価で問題を見落とす場合、タスクが早期に完了宣言される場合に積極的に使うこと。
 ---
 
 # Harness Design ガイド
