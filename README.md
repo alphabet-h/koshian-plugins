@@ -13,6 +13,7 @@ Claude Code プラグインのマーケットプレイスリポジトリ。
 | プラグイン | 説明 |
 |-----------|------|
 | [claude-nfd](plugins/claude-nfd/) | Nurture-First Development（NFD）ワークフロー — Knowledge Crystallization Cycle |
+| [harness-kit](plugins/harness-kit/) | Generator-Evaluator パターンによる長時間開発ハーネス — マルチエージェント品質保証ワークフロー |
 
 ## ライセンス
 
