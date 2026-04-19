@@ -55,7 +55,7 @@ Options:
 
 ```bash
 # 1. plugin scaffold
-bash ${CLAUDE_PLUGIN_ROOT}/skills/create-design-skill/scripts/scaffold-plugin.sh \
+bash ${CLAUDE_PLUGIN_ROOT}/skills/skill-creator-design/scripts/scaffold-plugin.sh \
   --output-dir "<cwd>/plugins/<plugin-name>" \
   --plugin-name "<plugin-name>" \
   --description "<description>" \
@@ -71,14 +71,14 @@ if [ -z "$MARKETPLACE_ROOT" ]; then
   echo "marketplace.json が見つかりませんでした。配布する場合は手動で登録してください。"
 else
   # 3-a. DRY-RUN で追記内容をプレビューする（--yes を付けない）
-  bash ${CLAUDE_PLUGIN_ROOT}/skills/create-design-skill/scripts/update-marketplace.sh \
+  bash ${CLAUDE_PLUGIN_ROOT}/skills/skill-creator-design/scripts/update-marketplace.sh \
     --marketplace-root "$MARKETPLACE_ROOT" \
     --plugin-name "<plugin-name>" \
     --plugin-source "./plugins/<plugin-name>" \
     --plugin-description "<description>"
   # 3-b. その出力を AskUserQuestion でユーザに見せて「この内容で marketplace.json に追記しますか？」と確認する。
   # 3-c. ユーザが承認したら --yes 付きで再実行して書き込む。
-  bash ${CLAUDE_PLUGIN_ROOT}/skills/create-design-skill/scripts/update-marketplace.sh --yes \
+  bash ${CLAUDE_PLUGIN_ROOT}/skills/skill-creator-design/scripts/update-marketplace.sh --yes \
     --marketplace-root "$MARKETPLACE_ROOT" \
     --plugin-name "<plugin-name>" \
     --plugin-source "./plugins/<plugin-name>" \

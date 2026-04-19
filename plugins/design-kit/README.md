@@ -4,7 +4,7 @@
 
 ## 何ができるか
 
-`/create-design-skill` を実行すると、対話形式で以下を聞かれ、デザインスキルを scaffold します:
+`/skill-creator-design` を実行すると、対話形式で以下を聞かれ、デザインスキルを scaffold します:
 
 1. 使うテンプレート（`ui-component` / `brand-voice` / `audit` / 自作テンプレ）
 2. テンプレ固有の設定（スキル名、対象スタック、デザイン哲学など）

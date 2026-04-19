@@ -1,9 +1,9 @@
 ---
-name: create-design-skill
+name: skill-creator-design
 description: 「デザインスキルを作って」「UI 生成スキルを作って」「ブランドボイスをスキル化したい」「監査スキル作って」「Claude にデザイン専門家になってほしい」等で起動。3 テンプレ（UI Component / Brand Voice / Audit）または自作テンプレから対話で選んで scaffold する。skill-creator が入っていれば eval ループも提案する。
 ---
 
-# create-design-skill (kit)
+# skill-creator-design (kit)
 
 テンプレート駆動でデザイン用エージェントスキルを生成する。**ガイド + テンプレ scaffold + (検出時) eval ループ**のハイブリッド型。
 
@@ -23,7 +23,7 @@ description: 「デザインスキルを作って」「UI 生成スキルを作�
 以下の 2 箇所から `metadata.yaml` を Glob で集める:
 
 ```
-${CLAUDE_PLUGIN_ROOT}/skills/create-design-skill/references/templates/*/metadata.yaml
+${CLAUDE_PLUGIN_ROOT}/skills/skill-creator-design/references/templates/*/metadata.yaml
 ~/.claude/design-skill-templates/*/metadata.yaml
 ```
 
@@ -93,10 +93,10 @@ write(output_path / "SKILL.md", template_content)
 └── scripts/         # 雛形のみ作成（空ディレクトリ + .gitkeep）
 ```
 
-plugin 出力時は加えて `${CLAUDE_PLUGIN_ROOT}/skills/create-design-skill/scripts/scaffold-plugin.sh` を Bash ツールで実行:
+plugin 出力時は加えて `${CLAUDE_PLUGIN_ROOT}/skills/skill-creator-design/scripts/scaffold-plugin.sh` を Bash ツールで実行:
 
 ```bash
-bash ${CLAUDE_PLUGIN_ROOT}/skills/create-design-skill/scripts/scaffold-plugin.sh \
+bash ${CLAUDE_PLUGIN_ROOT}/skills/skill-creator-design/scripts/scaffold-plugin.sh \
   --output-dir "<cwd>/plugins/<plugin-name>" \
   --plugin-name "<plugin-name>" \
   --description "<plugin-description>" \
