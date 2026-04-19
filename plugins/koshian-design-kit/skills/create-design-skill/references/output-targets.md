@@ -81,16 +81,18 @@ fi
 
 ## ヘルパ: marketplace 探索
 
-`find_marketplace_root` 相当の処理は SKILL.md 内で次のように行う:
+`find_marketplace_root` 相当の処理は SKILL.md 内で次のように行う。`cd && pwd` は Windows/Git Bash でのパス canonicalisation が不安定なので、Python の `os.path.realpath` を使う:
 
 ```bash
-DIR="$(cd "$1" && pwd)"
-while [ "$DIR" != "/" ]; do
+DIR="$(python -c "import os,sys; print(os.path.realpath(sys.argv[1]))" "$1")"
+while [ "$DIR" != "/" ] && [ -n "$DIR" ]; do
   if [ -f "$DIR/.claude-plugin/marketplace.json" ]; then
     echo "$DIR"
     return 0
   fi
-  DIR=$(dirname "$DIR")
+  PARENT="$(dirname "$DIR")"
+  [ "$PARENT" = "$DIR" ] && break   # reached filesystem root (handles Windows drive roots like C:/)
+  DIR="$PARENT"
 done
 return 1
 ```
