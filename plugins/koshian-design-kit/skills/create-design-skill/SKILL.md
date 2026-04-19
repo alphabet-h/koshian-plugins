@@ -125,6 +125,13 @@ C-with-marketplace 選択時は続けて update-marketplace.sh も呼ぶ（diff 
 
 ## Step 9: サマリー
 
+パス記法:
+- `<plugin_root>` = `<cwd>/plugins/<plugin-name>/`（plugin 出力時のみ）
+- `<output_path>` = スキル本体の置き場所
+    - project-local: `<cwd>/.claude/skills/<skill-name>/`
+    - user-global:   `~/.claude/skills/<skill-name>/`
+    - plugin:        `<plugin_root>/skills/<skill-name>/`  ← plugin_root 直下ではなく、必ず `skills/<skill-name>/` サブディレクトリ
+
 最後に以下を表示:
 
 ```
