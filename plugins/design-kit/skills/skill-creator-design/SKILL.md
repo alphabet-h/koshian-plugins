@@ -10,7 +10,7 @@ description: 「デザインスキルを作って」「UI 生成スキルを作�
 ## 全体ワークフロー
 
 ```
-[1] テンプレ列挙 → [2] テンプレ選択 → [3] テンプレ固有質問
+[0] プラグインルート解決 → [1] テンプレ列挙 → [2] テンプレ選択 → [3] テンプレ固有質問
     → [4] 出力先選択 → [5] (plugin 時) scaffold 範囲選択
     → [6] ファイル生成 → [7] skill-creator 検出 → [8] (検出時) eval 提案
     → [9] サマリー
@@ -18,12 +18,27 @@ description: 「デザインスキルを作って」「UI 生成スキルを作�
 
 詳細ロジックは references/ に分離している。Step 4-5 と 7-8 の詳細処理はそれぞれ `references/output-targets.md` と `references/eval-integration.md` を参照すること。
 
+## Step 0: プラグインルートの解決
+
+以下のフローで `<PLUGIN_ROOT>` と書かれている箇所はすべて、このプラグインのインストール絶対パス（この SKILL.md から見て `../../..` にあたる）に**テキスト置換して使う**。シェル変数 (`$PLUGIN_ROOT` や `${CLAUDE_PLUGIN_ROOT}`) として扱ってはいけない（Bash tool のサブプロセスには env var が export されないので空展開になる）。
+
+解決手順:
+1. スキル起動時に Claude 側で既知の、このスキル（SKILL.md）の絶対パスを取得する
+2. 先頭の `.../plugins/<plugin-name>/` までを plugin root として抽出（典型例: `C:/Users/you/.claude/plugins/cache/<marketplace>/<hash>/plugins/design-kit/`）
+3. 以降のすべての bash コマンド文字列 / Glob パターンで `<PLUGIN_ROOT>` を**この絶対パスに置換してから**実行
+
+例: SKILL.md 上の `bash <PLUGIN_ROOT>/skills/skill-creator-design/scripts/scaffold-plugin.sh` は、実際には以下のように実行すること:
+
+```bash
+bash "C:/Users/you/.claude/plugins/cache/.../design-kit/skills/skill-creator-design/scripts/scaffold-plugin.sh"
+```
+
 ## Step 1: テンプレ列挙
 
 以下の 2 箇所から `metadata.yaml` を Glob で集める:
 
 ```
-${CLAUDE_PLUGIN_ROOT}/skills/skill-creator-design/references/templates/*/metadata.yaml
+<PLUGIN_ROOT>/skills/skill-creator-design/references/templates/*/metadata.yaml
 ~/.claude/design-skill-templates/*/metadata.yaml
 ```
 
@@ -93,10 +108,10 @@ write(output_path / "SKILL.md", template_content)
 └── scripts/         # 雛形のみ作成（空ディレクトリ + .gitkeep）
 ```
 
-plugin 出力時は加えて `${CLAUDE_PLUGIN_ROOT}/skills/skill-creator-design/scripts/scaffold-plugin.sh` を Bash ツールで実行:
+plugin 出力時は加えて `<PLUGIN_ROOT>/skills/skill-creator-design/scripts/scaffold-plugin.sh` を Bash ツールで実行:
 
 ```bash
-bash ${CLAUDE_PLUGIN_ROOT}/skills/skill-creator-design/scripts/scaffold-plugin.sh \
+bash <PLUGIN_ROOT>/skills/skill-creator-design/scripts/scaffold-plugin.sh \
   --output-dir "<cwd>/plugins/<plugin-name>" \
   --plugin-name "<plugin-name>" \
   --description "<plugin-description>" \

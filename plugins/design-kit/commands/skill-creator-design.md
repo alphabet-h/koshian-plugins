@@ -15,4 +15,4 @@ allowed-tools: [Bash, Read, Write, Edit, Glob, AskUserQuestion]
 5. ファイル生成
 6. skill-creator 検出時、eval ループ実行確認
 
-詳細は `${CLAUDE_PLUGIN_ROOT}/skills/skill-creator-design/SKILL.md` を参照。
+詳細は、ロード済みスキル本体（`skill-creator-design`）の SKILL.md を参照。
