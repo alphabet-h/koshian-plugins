@@ -90,20 +90,21 @@ fi
 
 ## ヘルパ: marketplace 探索
 
-`find_marketplace_root` 相当の処理は SKILL.md 内で次のように行う。`cd && pwd` は Windows/Git Bash でのパス canonicalisation が不安定なので、Python の `os.path.realpath` を使う:
+SKILL.md から **Bash tool の 1 コマンド**として実行することを想定。top-level スクリプトなので `return` は使えない (`return` は関数内専用)。`exit` で上下する。`cd && pwd` は Windows/Git Bash でのパス canonicalisation が不安定なので、Python の `os.path.realpath` を使う:
 
 ```bash
-DIR="$(python -c "import os,sys; print(os.path.realpath(sys.argv[1]))" "$1")"
-while [ "$DIR" != "/" ] && [ -n "$DIR" ]; do
+DIR="$(python -c "import os,sys; print(os.path.realpath(sys.argv[1]))" "<cwd>")"
+while [ -n "$DIR" ]; do
   if [ -f "$DIR/.claude-plugin/marketplace.json" ]; then
     echo "$DIR"
-    return 0
+    exit 0
   fi
   PARENT="$(dirname "$DIR")"
   [ "$PARENT" = "$DIR" ] && break   # reached filesystem root (handles Windows drive roots like C:/)
   DIR="$PARENT"
 done
-return 1
+echo "NOT_FOUND" >&2
+exit 1
 ```
 
-見つからなかった場合は警告を出して standard 相当（marketplace 追記スキップ）に fallback する。
+見つからなかった場合 (`exit 1`) は警告を出して standard 相当（marketplace 追記スキップ）に fallback する。
