@@ -16,6 +16,11 @@
       "name": "harness-kit",
       "source": "./plugins/harness-kit",
       "description": "Generator-Evaluator pattern harness for long-running development tasks with multi-agent quality assurance"
+    },
+    {
+      "name": "koshian-design-kit",
+      "source": "./plugins/koshian-design-kit",
+      "description": "Template-driven creator for design-focused Claude Code skills (UI Component / Brand Voice / Audit)"
     }
   ]
 }
