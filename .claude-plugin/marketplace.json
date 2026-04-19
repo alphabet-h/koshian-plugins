@@ -21,6 +21,11 @@
       "name": "design-kit",
       "source": "./plugins/design-kit",
       "description": "Template-driven creator for design-focused Claude Code skills (UI Component / Brand Voice / Audit)"
+    },
+    {
+      "name": "design-forge",
+      "source": "./plugins/design-forge",
+      "description": "Free-form Q&A driven creator for design-focused Claude Code skills — any industry (IT and non-IT). Sister of design-kit."
     }
   ]
 }

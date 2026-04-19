@@ -1,0 +1,10 @@
+{
+  "name": "design-forge",
+  "version": "0.1.0",
+  "description": "Free-form Q&A driven creator for design-focused Claude Code skills — works for any industry (IT, architecture, law, education, ...). Sister plugin: design-kit for template-driven creation.",
+  "author": {
+    "name": "koshian"
+  },
+  "repository": "https://github.com/alphabet-h/koshian-plugins",
+  "keywords": ["skill-creator", "design", "qa-driven", "forge", "any-industry"]
+}
