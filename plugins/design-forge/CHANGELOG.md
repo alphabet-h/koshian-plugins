@@ -16,3 +16,13 @@
 ### Requirements
 - Python 3.6+ (inherited from `design-kit` shared scripts). See README.
 - Future: shared-part drift mitigation (sync script between kit and forge) planned for v0.2+.
+
+### Verified
+- End-to-end manual verification 2026-04-20 on Windows 11 / Git Bash:
+  - Persona classification working for IT (Generator / Auditor) and non-IT personas
+  - Dynamic question generation produces 3-7 relevant questions per persona
+  - Structure-proposal step with "もういい、とにかく作って" escape valve functional
+  - plugin output modes (standard / with-marketplace) produce correct file layout
+  - update-marketplace.sh 3-step dance (dry-run → AskUserQuestion → --yes) completes cleanly
+  - skill-creator detection and eval integration fallback work
+  - kit-dependency-style references in SKILL.md / references/ already removed for forward-compatibility
