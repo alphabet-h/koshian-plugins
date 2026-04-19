@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.1.1] - 2026-04-19
+
+### Changed
+- Move internal design docs (`docs/spec.md`, `docs/plan-phase1.md`) out of the plugin directory to repo-level `documents/design-kit/`. They were never user-facing documentation and were bloating every install by ~2000 lines.
+
 ## [0.1.0] - 2026-04-19
 
 ### Added
