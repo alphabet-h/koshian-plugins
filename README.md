@@ -14,6 +14,7 @@ Claude Code プラグインのマーケットプレイスリポジトリ。
 |-----------|------|
 | [claude-nfd](plugins/claude-nfd/) | Nurture-First Development（NFD）ワークフロー — Knowledge Crystallization Cycle |
 | [harness-kit](plugins/harness-kit/) | Generator-Evaluator パターンによる長時間開発ハーネス — マルチエージェント品質保証ワークフロー |
+| [design-kit](plugins/design-kit/) | テンプレート駆動でデザイン用エージェントスキルを作成するメタスキル（UI Component / Brand Voice / Audit + 自作テンプレ対応） |
 
 ## ライセンス
 

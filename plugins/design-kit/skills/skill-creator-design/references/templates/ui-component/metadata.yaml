@@ -1,0 +1,29 @@
+name: ui-component
+description: UI コンポーネント生成に特化したデザインスキルを作る
+use_case: Tailwind / shadcn / Vue / React 等の UI コンポーネント生成スキル
+questions:
+  - id: skill_name
+    prompt: "スキル名（kebab-case、例: bold-button-generator）"
+    type: text
+  - id: stack
+    prompt: 対象スタック
+    type: choice
+    choices: [Tailwind CSS, shadcn/ui, React, Vue, Svelte, vanilla HTML/CSS, その他（自由入力）]
+  - id: design_philosophy
+    prompt: デザイン哲学
+    type: choice
+    choices: [Brutalism, Minimalism, Glassmorphism, Neumorphism, Maximalism, Bento Grid, Skeuomorphism, その他（自由入力）]
+  - id: components
+    prompt: 必須コンポーネント領域（複数選択可、コンマ区切り）
+    type: text
+    placeholder: "Button, Modal, Form, Card, Navigation"
+  - id: trigger_phrases
+    prompt: ユーザがどう発話したらこのスキルが起動すべきか（2-3 例）
+    type: text
+    placeholder: "ボタン作って、モーダル設計して、ヒーローセクション作成"
+placeholders:
+  - skill_name
+  - stack
+  - design_philosophy
+  - components
+  - trigger_phrases
