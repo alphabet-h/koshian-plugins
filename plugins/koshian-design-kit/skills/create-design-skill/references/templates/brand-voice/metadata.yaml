@@ -1,0 +1,43 @@
+name: brand-voice
+description: 自社/個人ブランドの voice を成果物（PDF / スライド / メール / Web）に一貫適用するスキルを作る
+use_case: あらゆる成果物を on-brand に揃えたい個人・企業
+questions:
+  - id: skill_name
+    prompt: "スキル名（kebab-case、例: acme-brand-voice）"
+    type: text
+  - id: brand_name
+    prompt: ブランド名 / 個人名
+    type: text
+  - id: target_media
+    prompt: 対象媒体（複数選択可、コンマ区切り）
+    type: text
+    placeholder: "PDF レポート, スライド, メール, Web 記事, SNS 投稿"
+  - id: primary_colors
+    prompt: 主要色（最大 3 色、HEX 形式、コンマ区切り）
+    type: text
+    placeholder: "#FF6B6B, #4ECDC4, #1A1A2E"
+  - id: heading_font
+    prompt: 見出しフォント
+    type: text
+    placeholder: "Playfair Display"
+  - id: body_font
+    prompt: 本文フォント
+    type: text
+    placeholder: "Inter"
+  - id: tone
+    prompt: トーン
+    type: choice
+    choices: [formal, friendly, playful, technical, journalistic, conversational, その他（自由入力）]
+  - id: forbidden
+    prompt: 「これだけはやってほしくない」表現や用語（任意、コンマ区切り）
+    type: text
+    placeholder: "顧客様, 弊社では, 〜させていただきます"
+placeholders:
+  - skill_name
+  - brand_name
+  - target_media
+  - primary_colors
+  - heading_font
+  - body_font
+  - tone
+  - forbidden
