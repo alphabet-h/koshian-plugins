@@ -28,6 +28,19 @@
 /plugin install design-kit@koshian-plugins
 ```
 
+## 前提 (Requirements)
+
+このプラグインは `scaffold-plugin.sh` / `update-marketplace.sh` の中で Python 3 を使って JSON の読み書きを行います。**Python 3.6 以降** が PATH に通っている必要があります。
+
+- macOS / Linux: ほぼ最初から入っています (`python3 --version` で確認)
+- Windows: 標準では入っていません。以下のいずれかで install:
+  - [python.org 公式インストーラ](https://www.python.org/downloads/) (インストーラの "Add python.exe to PATH" を必ず ON)
+  - `winget install Python.Python.3`
+
+Python が無くてもテンプレート選択・project-local / user-global 出力は動きますが、**plugin 出力モード**では scaffold と marketplace 追記で Python に依存します。
+
+> 将来バージョン (v0.2+) で pure bash + jq への移行を検討しています。
+
 ## 自作テンプレートを追加する
 
 `~/.claude/design-skill-templates/<your-template-name>/` に以下 2 ファイルを置けば、次回起動時にテンプレ候補に自動的に追加されます:

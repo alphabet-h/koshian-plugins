@@ -10,3 +10,7 @@
 - Three output destinations: project-local, user-global, plugin (with optional marketplace.json registration)
 - Optional integration with `skill-creator:skill-creator` eval loop when detected
 - Common scripts: `scaffold-plugin.sh`, `update-marketplace.sh` (shared with future `design-forge`)
+
+### Requirements
+- Python 3.6+ (used by `scaffold-plugin.sh` / `update-marketplace.sh` for JSON I/O). See README.
+- Future: planned migration to bash + jq or a zero-dep alternative in v0.2+.
