@@ -1,0 +1,25 @@
+name: audit
+description: 既存コード/デザインを採点する監査型スキルを作る（v0.1 では雛形のみ、v0.2 で完成度向上予定）
+use_case: Web UI / アニメーション / アクセシビリティ等の audit スキル（Vercel agent-skills や Motion AI Kit のような）
+status: stub
+questions:
+  - id: skill_name
+    prompt: "スキル名（kebab-case、例: animation-perf-audit）"
+    type: text
+  - id: target
+    prompt: 監査対象
+    type: choice
+    choices: [Web UI コード, CSS/JS アニメーション, アクセシビリティ, ブランド一貫性, その他（自由入力）]
+  - id: scoring_method
+    prompt: 採点方式
+    type: choice
+    choices: [S-F tier (Motion AI Kit 風), 0-100 score, pass-fail, 重大度ラベル (critical/warning/info)]
+  - id: trigger_phrases
+    prompt: 起動トリガフレーズ（2-3 例、コンマ区切り）
+    type: text
+    placeholder: "audit して, 監査して, パフォーマンス見て"
+placeholders:
+  - skill_name
+  - target
+  - scoring_method
+  - trigger_phrases
