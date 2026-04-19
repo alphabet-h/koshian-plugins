@@ -1,5 +1,11 @@
 #!/bin/bash
 # update-marketplace.sh — append a new plugin entry to .claude-plugin/marketplace.json
+#
+# Default behaviour is **dry-run**: the script prints the entry it would append and exits.
+# Pass --yes to actually write the file. This design lets the calling agent (or user)
+# preview first and confirm via its own UI (e.g. AskUserQuestion), without relying on
+# an interactive `read` prompt that breaks when stdin is not a TTY (e.g. invoked from
+# the Claude Code Bash tool).
 
 set -euo pipefail
 
@@ -7,6 +13,7 @@ MARKETPLACE_ROOT=""
 PLUGIN_NAME=""
 PLUGIN_SOURCE=""
 PLUGIN_DESCRIPTION=""
+ASSUME_YES=0
 
 while [[ $# -gt 0 ]]; do
   case $1 in
@@ -14,6 +21,7 @@ while [[ $# -gt 0 ]]; do
     --plugin-name) PLUGIN_NAME="$2"; shift 2 ;;
     --plugin-source) PLUGIN_SOURCE="$2"; shift 2 ;;
     --plugin-description) PLUGIN_DESCRIPTION="$2"; shift 2 ;;
+    --yes|-y) ASSUME_YES=1; shift ;;
     *) echo "Unknown arg: $1"; exit 2 ;;
   esac
 done
@@ -66,13 +74,9 @@ echo "---"
 echo "$NEW_ENTRY"
 echo "---"
 
-# Confirm (skip if DRY_RUN_AUTO_CONFIRM env var is set, used by tests)
-if [ -z "${DRY_RUN_AUTO_CONFIRM:-}" ]; then
-  read -p "Proceed? [y/N] " ANSWER
-  if [[ "$ANSWER" != "y" && "$ANSWER" != "Y" ]]; then
-    echo "Aborted by user."
-    exit 1
-  fi
+if [ "$ASSUME_YES" -eq 0 ]; then
+  echo "(dry-run; no changes written. Re-run with --yes to apply.)"
+  exit 0
 fi
 
 # Append. Read from stdin and write to a tmpfile (avoids passing Windows/Git Bash paths into Python).

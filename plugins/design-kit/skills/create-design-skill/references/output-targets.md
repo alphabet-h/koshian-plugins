@@ -48,8 +48,8 @@ Options:
 1. AskUserQuestion で plugin-name を聞く（kebab-case、デフォルトは skill-name と同じ）
 2. AskUserQuestion で description を聞く（plugin.json に入る）
 3. AskUserQuestion で scaffold 範囲を聞く:
-   - `B-standard` (plugin.json + LICENSE + README + CHANGELOG だけ生成、marketplace.json は触らない)
-   - `C-with-marketplace` (B + 親リポの .claude-plugin/marketplace.json に追記)
+   - `standard` (plugin.json + LICENSE + README + CHANGELOG だけ生成、marketplace.json は触らない)
+   - `with-marketplace` (standard + 親リポの .claude-plugin/marketplace.json に追記)
 
 実行手順:
 
@@ -65,19 +65,28 @@ bash ${CLAUDE_PLUGIN_ROOT}/skills/create-design-skill/scripts/scaffold-plugin.sh
 mkdir -p "<cwd>/plugins/<plugin-name>/skills/<skill-name>"
 # ... (Write tool で SKILL.md を書き出す)
 
-# 3. C-with-marketplace 選択時のみ:
-#    親リポを上方向に探索して .claude-plugin/marketplace.json を見つける
+# 3. with-marketplace 選択時のみ。親リポを上方向に探索して .claude-plugin/marketplace.json を見つける。
 MARKETPLACE_ROOT=$(find_marketplace_root "<cwd>")  # 後述ヘルパ
-if [ -n "$MARKETPLACE_ROOT" ]; then
+if [ -z "$MARKETPLACE_ROOT" ]; then
+  echo "marketplace.json が見つかりませんでした。配布する場合は手動で登録してください。"
+else
+  # 3-a. DRY-RUN で追記内容をプレビューする（--yes を付けない）
   bash ${CLAUDE_PLUGIN_ROOT}/skills/create-design-skill/scripts/update-marketplace.sh \
     --marketplace-root "$MARKETPLACE_ROOT" \
     --plugin-name "<plugin-name>" \
     --plugin-source "./plugins/<plugin-name>" \
     --plugin-description "<description>"
-else
-  echo "marketplace.json が見つかりませんでした。配布する場合は手動で登録してください。"
+  # 3-b. その出力を AskUserQuestion でユーザに見せて「この内容で marketplace.json に追記しますか？」と確認する。
+  # 3-c. ユーザが承認したら --yes 付きで再実行して書き込む。
+  bash ${CLAUDE_PLUGIN_ROOT}/skills/create-design-skill/scripts/update-marketplace.sh --yes \
+    --marketplace-root "$MARKETPLACE_ROOT" \
+    --plugin-name "<plugin-name>" \
+    --plugin-source "./plugins/<plugin-name>" \
+    --plugin-description "<description>"
 fi
 ```
+
+**重要**: `--yes` を省略すると script は dry-run モードで終わる（ファイルを書き換えない）。Claude Code の Bash tool は非 TTY のため `read -p` 型の対話入力は使えない。ユーザ確認は必ず AskUserQuestion 側で行い、dry-run → 確認 → `--yes` 実行の 3 ステップを守ること。
 
 ## ヘルパ: marketplace 探索
 
@@ -97,4 +106,4 @@ done
 return 1
 ```
 
-見つからなかった場合は警告を出して B-standard 相当（marketplace 追記スキップ）に fallback する。
+見つからなかった場合は警告を出して standard 相当（marketplace 追記スキップ）に fallback する。

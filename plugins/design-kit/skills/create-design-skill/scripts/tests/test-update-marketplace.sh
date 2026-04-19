@@ -24,14 +24,6 @@ cat > "$TMP/.claude-plugin/marketplace.json" <<'EOF'
 }
 EOF
 
-# Invoke (auto-confirm via env var to bypass interactive prompt)
-DRY_RUN_AUTO_CONFIRM=1 bash "$SCRIPT" \
-  --marketplace-root "$TMP" \
-  --plugin-name "new-plugin" \
-  --plugin-source "./plugins/new-plugin" \
-  --plugin-description "New plugin description"
-
-# Assertions
 assert_contains() {
   if ! grep -q "$2" "$1"; then
     echo "FAIL: $1 does not contain '$2'"
@@ -40,10 +32,30 @@ assert_contains() {
   fi
 }
 
+# 1. Dry-run (no flag) must NOT modify the file.
+BEFORE_DRY="$(cat "$TMP/.claude-plugin/marketplace.json")"
+bash "$SCRIPT" \
+  --marketplace-root "$TMP" \
+  --plugin-name "dry-run-plugin" \
+  --plugin-source "./plugins/dry-run-plugin" \
+  --plugin-description "Should not be appended" > /dev/null
+AFTER_DRY="$(cat "$TMP/.claude-plugin/marketplace.json")"
+if [ "$BEFORE_DRY" != "$AFTER_DRY" ]; then
+  echo "FAIL: dry-run mode modified the file"
+  exit 1
+fi
+
+# 2. With --yes the entry must be appended.
+bash "$SCRIPT" --yes \
+  --marketplace-root "$TMP" \
+  --plugin-name "new-plugin" \
+  --plugin-source "./plugins/new-plugin" \
+  --plugin-description "New plugin description"
+
 assert_contains "$TMP/.claude-plugin/marketplace.json" '"name": "new-plugin"'
 assert_contains "$TMP/.claude-plugin/marketplace.json" '"name": "existing-plugin"'
 
-# Validate JSON syntax (read via stdin for cross-platform path safety on Windows/Git Bash)
+# 3. Validate JSON syntax (read via stdin for cross-platform path safety on Windows/Git Bash).
 python -c "import json,sys; data = json.load(sys.stdin); assert len(data['plugins']) == 2" < "$TMP/.claude-plugin/marketplace.json"
 
-echo "PASS: update-marketplace.sh appends new plugin entry"
+echo "PASS: update-marketplace.sh dry-run + --yes behaviour"

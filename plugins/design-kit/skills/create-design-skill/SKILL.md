@@ -67,10 +67,10 @@ Options:
 
 `references/output-targets.md` の plugin セクションに従って:
 
-- B-standard: plugin.json + LICENSE + README + CHANGELOG だけ生成
-- C-with-marketplace: B + 親リポの marketplace.json に追記
+- standard: plugin.json + LICENSE + README + CHANGELOG だけ生成
+- with-marketplace: standard + 親リポの marketplace.json に追記
 
-C 選択時は `find_marketplace_root` ヘルパで上方向探索。見つからなければ B にフォールバックして警告。
+with-marketplace 選択時は `find_marketplace_root` ヘルパで上方向探索。見つからなければ standard にフォールバックして警告。
 
 ## Step 6: ファイル生成
 
@@ -103,7 +103,13 @@ bash ${CLAUDE_PLUGIN_ROOT}/skills/create-design-skill/scripts/scaffold-plugin.sh
   --author "<from git config user.name or default 'unknown'>"
 ```
 
-C-with-marketplace 選択時は続けて update-marketplace.sh も呼ぶ（diff 確認 → 反映）。
+with-marketplace 選択時は続けて update-marketplace.sh を**必ず 2 段階**で呼ぶ:
+
+1. `--yes` なしで実行 → dry-run モードで追記内容をプレビュー（ファイルは変更しない）
+2. プレビューを AskUserQuestion でユーザに見せて承認を取る
+3. 承認されたら `--yes` を付けて再実行 → 書き込み
+
+`update-marketplace.sh` は `read -p` のような対話確認を持たない（Claude Code の Bash tool は非 TTY）。必ずこの 3 ステップ（dry-run → AskUserQuestion → --yes）を踏むこと。ユーザ確認を経ずにいきなり `--yes` を付けて呼ぶのは禁止。
 
 ## Step 7: skill-creator 検出
 
@@ -146,7 +152,7 @@ C-with-marketplace 選択時は続けて update-marketplace.sh も呼ぶ（diff 
   - <plugin_root>/LICENSE
   - <plugin_root>/README.md
   - <plugin_root>/CHANGELOG.md
-  (C 選択時)
+  (with-marketplace 選択時)
   - <marketplace_root>/.claude-plugin/marketplace.json (updated)
 
 次のアクション:
