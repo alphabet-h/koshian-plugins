@@ -1,0 +1,10 @@
+{
+  "name": "design-kit",
+  "version": "0.1.0",
+  "description": "Template-driven creator for design-focused Claude Code skills (UI Component / Brand Voice / Audit). Sister plugin: design-forge for free-form Q&A driven creation.",
+  "author": {
+    "name": "koshian"
+  },
+  "repository": "https://github.com/alphabet-h/koshian-plugins",
+  "keywords": ["skill-creator", "design", "ui-component", "brand-voice", "template"]
+}

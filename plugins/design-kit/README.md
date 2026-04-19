@@ -1,4 +1,4 @@
-# koshian-design-kit
+# design-kit
 
 > テンプレート駆動でデザイン用エージェントスキルを作成する Claude Code プラグイン。
 
@@ -25,7 +25,7 @@
 
 ```
 /plugin marketplace add alphabet-h/koshian-plugins
-/plugin install koshian-design-kit@koshian-plugins
+/plugin install design-kit@koshian-plugins
 ```
 
 ## 自作テンプレートを追加する
@@ -61,7 +61,7 @@ placeholders:
 
 ## 姉妹プラグイン
 
-`koshian-design-forge` — テンプレートに縛られず、フリー入力 + Q&A で動的にデザインスキルを構築するプラグイン。テンプレ化しにくい用途や、新ドメインのスキルを試作したい時に。
+`design-forge` — テンプレートに縛られず、フリー入力 + Q&A で動的にデザインスキルを構築するプラグイン。テンプレ化しにくい用途や、新ドメインのスキルを試作したい時に。
 
 ## ライセンス
 

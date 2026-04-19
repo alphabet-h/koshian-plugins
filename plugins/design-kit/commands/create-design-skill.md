@@ -5,7 +5,7 @@ allowed-tools: [Bash, Read, Write, Edit, Glob, AskUserQuestion]
 
 # /create-design-skill
 
-`koshian-design-kit` プラグインの `create-design-skill` スキルを起動する。
+`design-kit` プラグインの `create-design-skill` スキルを起動する。
 
 スキルが対話形式で以下を進める:
 1. テンプレート列挙（同梱 + ユーザ override）
