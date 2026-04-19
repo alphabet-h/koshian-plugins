@@ -1,11 +1,11 @@
 ---
 name: skill-creator-forge
-description: 「デザインスキルをフリー入力から作って」「テンプレに収まらないスキルを組み立てたい」「新ドメインや業界向けのスキルを試作したい」「このフリー入力から SKILL.md を組み立てて」等で起動。ペルソナ分類 → 動的質問 → 構造提案 → 生成 の順で、design-kit のテンプレに縛られず**業種を問わず**デザインスキルを作る。skill-creator が入っていれば eval ループも提案する。
+description: 「デザインスキルをフリー入力から作って」「テンプレに収まらないスキルを組み立てたい」「新ドメインや業界向けのスキルを試作したい」「このフリー入力から SKILL.md を組み立てて」等で起動。ペルソナ分類 → 動的質問 → 構造提案 → 生成 の順で、テンプレに縛られず**業種を問わず**デザインスキルを作る。skill-creator が入っていれば eval ループも提案する。
 ---
 
 # skill-creator-forge (design-forge)
 
-フリー入力 + Q&A 駆動でデザイン用エージェントスキルを生成する。**design-kit の補完**として、テンプレに収まらない新ドメイン、業種を問わない用途、試作用途で使う。姉妹プラグイン `design-kit` と並列配布して A/B 比較の素材になる設計。
+フリー入力 + Q&A 駆動でデザイン用エージェントスキルを生成する。テンプレに縛られない新ドメイン、業種を問わない用途、試作用途で使う。テンプレ駆動の姉妹プラグインと並列配布されている場合は A/B 比較の素材にもなる設計。
 
 ## 全体ワークフロー
 
@@ -19,14 +19,14 @@ description: 「デザインスキルをフリー入力から作って」「テ�
 詳細ロジックは references/ に分離:
 - `references/persona-categories.md` — Step 2 の分類基準（IT / 非 IT の例を併記）
 - `references/question-bank.md` — Step 3 の質問パターン集（業種別補足あり）
-- `references/output-targets.md` — Step 5-6 の処理（design-kit と共通）
-- `references/eval-integration.md` — Step 8-9 の処理（design-kit と共通）
+- `references/output-targets.md` — Step 5-6 の出力先選択と scaffold 手順
+- `references/eval-integration.md` — Step 8-9 の skill-creator 検出と eval 提案
 
 ## Step 0: プラグインルートの解決
 
 以下のフローで `<PLUGIN_ROOT>` と書かれている箇所はすべて、このプラグインのインストール絶対パス（この SKILL.md から見て `../../..` にあたる）に**テキスト置換して使う**。シェル変数 (`$PLUGIN_ROOT` や `${CLAUDE_PLUGIN_ROOT}`) として扱ってはいけない（Bash tool のサブプロセスには env var が export されないので空展開になる）。
 
-解決手順（design-kit の SKILL.md Step 0 と同じ）:
+解決手順:
 1. このスキルの絶対パスから `.../plugins/design-forge/` までを plugin root として抽出
 2. 以降のすべての bash コマンド / Glob で `<PLUGIN_ROOT>` をこの絶対パスに置換してから実行
 
@@ -141,24 +141,22 @@ Question: 以下の構造で SKILL.md を作成します。調整しますか？
 Options:
   - この構造で進める (Recommended)
   - 見出しを追加 / 削除したい（どう変えたいか次ターンで入力）
-  - 既存のテンプレ参考を見たい（design-kit の該当テンプレを表示）
+  - 類似スキルの構造を参考に見たい（~/.claude/skills/ 配下や他プラグインに類似スキルがあれば Glob で列挙して提示）
   - もういい、とにかく作って（構造調整スキップ、Step 5 へ）
 ```
 
 ## Step 5: 出力先選択
 
-`references/output-targets.md` の手順に従い AskUserQuestion:
+`references/output-targets.md` の手順に従い AskUserQuestion で以下を提示:
 - project-local
 - user-global
 - plugin
 
-design-kit と完全共通の処理。
+選ばれた出力先に応じた事前チェック（git リポ確認、同名スキル衝突チェック等）は `references/output-targets.md` を参照。
 
 ## Step 6: (plugin 時のみ) scaffold 範囲選択
 
-`standard` / `with-marketplace` を AskUserQuestion。with-marketplace 選択時は `find_marketplace_root` で marketplace.json を上方向探索。
-
-design-kit と完全共通。詳細は `references/output-targets.md`。
+`standard` / `with-marketplace` を AskUserQuestion。with-marketplace 選択時は `find_marketplace_root` ヘルパで marketplace.json を上方向探索する。詳細は `references/output-targets.md` の plugin セクション。
 
 ## Step 7: ファイル生成
 
@@ -211,19 +209,36 @@ industry_hint があれば該当業種の補足セクション（建築=法改�
 
 **reference 処理**: Step 3 で URL / 画像パスが指定されていたら、WebFetch or Read でローカルに取り込んで `references/` ディレクトリに保存。PDF や画像等 WebFetch で取れないものはパスだけ記録してユーザに「手動で references/ に配置してください」と案内。
 
-plugin 出力時は `scaffold-plugin.sh` + (with-marketplace なら `update-marketplace.sh` を **dry-run → AskUserQuestion → --yes** の 3 段階で) 実行。design-kit Step 6 と同じ手順。
+plugin 出力時は `scaffold-plugin.sh` (plugin.json + LICENSE + README + CHANGELOG 生成) を実行。with-marketplace 選択時はさらに `update-marketplace.sh` を **dry-run → AskUserQuestion で追記内容を確認 → `--yes` で書き込み** の 3 段階で実行（`read -p` 型の対話確認は Claude Code の Bash tool が非 TTY なため使えず、必ずこの 3 ステップを踏むこと）。
 
 ## Step 8: skill-creator 検出
 
-`references/eval-integration.md` の Glob 検出（design-kit と共通）。
+`references/eval-integration.md` の手順で Glob 検出:
+
+```
+~/.claude/plugins/cache/**/skill-creator/**/SKILL.md
+```
 
 ## Step 9: (検出時のみ) eval 提案
 
-AskUserQuestion で `run-now / show-command / skip` の 3 択（design-kit と共通）。
+`references/eval-integration.md` の AskUserQuestion 3 択を提示:
+
+- run-now → サブエージェントとして `Skill(skill-creator:skill-creator)` を invoke
+- show-command → コマンド表示のみ
+- skip → 何もしない
+
+未検出時は eval を提案せず、サマリ末尾に install ヒントを 1 行追加。
 
 ## Step 10: サマリー
 
-design-kit の Step 9 と同じパス記法を使って作成ファイル一覧 + 次アクション提案を表示。
+パス記法:
+- `<plugin_root>` = `<cwd>/plugins/<plugin-name>/`（plugin 出力時のみ）
+- `<output_path>` = スキル本体の置き場所
+    - project-local: `<cwd>/.claude/skills/<skill-name>/`
+    - user-global:   `~/.claude/skills/<skill-name>/`
+    - plugin:        `<plugin_root>/skills/<skill-name>/` （plugin_root 直下ではなく `skills/<skill-name>/` サブディレクトリ）
+
+最後に以下を表示:
 
 ```
 ✓ デザインスキル作成完了（forge）
@@ -244,8 +259,9 @@ design-kit の Step 9 と同じパス記法を使って作成ファイル一覧 
   3. (任意) /plugin install で動作確認
   4. (skill-creator 入っていれば) eval ループで品質測定
 
-💡 Tip: 同じ要件で `/skill-creator-design` (design-kit 側) も試して出力を比較すると、
-   テンプレ駆動 vs フリーフォームのどちらが自分の用途に合うかがわかります。
+💡 Tip: テンプレ駆動型のデザインスキル作成スキルが同じマーケットプレースに
+   あれば、同じ要件で両方試して出力を比較すると、テンプレ駆動 vs
+   フリーフォームのどちらが自分の用途に合うかがわかります。
 ```
 
 ## 中断時のリカバリ
@@ -256,24 +272,22 @@ design-kit の Step 9 と同じパス記法を使って作成ファイル一覧 
 - Step 7 中断 → 部分的に作成されたファイルパスを表示し、削除コマンドを提示
 - Step 8-10 中断 → ファイル自体は作成済みなので、その旨表示して終了
 
-## design-kit との A/B 比較観点
+## 本スキルが向く / 向かない用途
 
-本スキルは `design-kit` の姉妹として設計されており、以下の使い分けが想定される:
-
-| 状況 | 推奨 | 理由 |
+| 状況 | 本スキル (forge) が向くか | 理由 |
 |---|---|---|
-| UI コンポーネント / ブランドボイス / 監査スキルで定型通りでいい | `design-kit` | テンプレ選択 → 少数の設定質問で早い |
-| 非 Web / 非 IT 業種向けのスキル | `design-forge` | フリー入力が自然、業種特有用語を引き継げる |
-| テンプレ化できるか自信がない、まず試作 | `design-forge` | Step 1 フリー入力で思考整理しながら組み立てられる |
-| 同じ要件で両アプローチを比較したい | 両方試す | 出力 SKILL.md の質を見比べて自分の好みで選ぶ |
+| UI コンポーネント / ブランドボイス / 監査 など**定型パターン**ではっきりしている | ✗ | テンプレ駆動型のスキル作成スキル（マーケットプレースにあれば）の方が早い |
+| **非 Web / 非 IT 業種**向けのスキル | ◎ | フリー入力が自然、業種特有用語を引き継げる |
+| **テンプレ化できるか自信がない**、まず試作したい | ◎ | Step 1 フリー入力で思考整理しながら組み立てられる |
+| 同じ要件を複数アプローチで比較したい | ◎（両方試す）| 他のスキル作成スキルとも組み合わせて出力を比較 |
 
-質問 wording は `design-kit` のテンプレと意図的に一致させている項目があるので、**同じ入力で両方を試したときに出力が like-for-like で比較できる**ように設計されている（`references/question-bank.md` の「A/B 比較観点での配慮」参照）。
+本スキルの必須質問 wording（トリガフレーズ / 入力の典型例 / 出力フォーマット 等）は汎用的な表現にしてあるので、テンプレ駆動型の姉妹スキルと同じ入力で両方を試すと**like-for-like な比較**がしやすくなる（詳細は `references/question-bank.md` の「A/B 比較観点での配慮」参照）。
 
 ## 関連 references
 
 - `references/persona-categories.md` — 4 カテゴリ定義 + IT/非 IT 例
 - `references/question-bank.md` — 質問パターン集 + 選抜アルゴリズム + 業種別補足
-- `references/output-targets.md` — 出力先選択（design-kit と共通）
-- `references/eval-integration.md` — skill-creator 検出と eval 提案（design-kit と共通）
-- `scripts/scaffold-plugin.sh` — プラグインフォルダ scaffold（design-kit と共通）
-- `scripts/update-marketplace.sh` — marketplace.json 追記（design-kit と共通）
+- `references/output-targets.md` — 出力先選択と各々の処理詳細
+- `references/eval-integration.md` — skill-creator 検出と eval 提案
+- `scripts/scaffold-plugin.sh` — プラグインフォルダ scaffold
+- `scripts/update-marketplace.sh` — marketplace.json 追記
