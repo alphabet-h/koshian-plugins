@@ -18,12 +18,17 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
-for var in MARKETPLACE_ROOT PLUGIN_NAME PLUGIN_SOURCE PLUGIN_DESCRIPTION; do
-  if [ -z "${!var}" ]; then
-    echo "Error: --${var,,} is required"
+require_arg() {
+  local var_name="$1" flag="$2"
+  if [ -z "${!var_name}" ]; then
+    echo "Error: $flag is required"
     exit 2
   fi
-done
+}
+require_arg MARKETPLACE_ROOT   --marketplace-root
+require_arg PLUGIN_NAME        --plugin-name
+require_arg PLUGIN_SOURCE      --plugin-source
+require_arg PLUGIN_DESCRIPTION --plugin-description
 
 MARKETPLACE_FILE="$MARKETPLACE_ROOT/.claude-plugin/marketplace.json"
 
@@ -44,15 +49,16 @@ sys.exit(0 if os.environ['PLUGIN_NAME'] in names else 1)
   exit 0
 fi
 
-# Show diff preview
-NEW_ENTRY=$(PLUGIN_NAME="$PLUGIN_NAME" PLUGIN_SOURCE="$PLUGIN_SOURCE" PLUGIN_DESCRIPTION="$PLUGIN_DESCRIPTION" python -c "
-import json, os
+# Show diff preview. Values are passed via env vars (not string-interpolated) to avoid
+# breaking the Python literal when a plugin name/description contains quotes or backslashes.
+NEW_ENTRY=$(PYTHONIOENCODING=utf-8 PLUGIN_NAME="$PLUGIN_NAME" PLUGIN_SOURCE="$PLUGIN_SOURCE" PLUGIN_DESCRIPTION="$PLUGIN_DESCRIPTION" python -c "
+import json, os, sys
 entry = {
     'name': os.environ['PLUGIN_NAME'],
     'source': os.environ['PLUGIN_SOURCE'],
     'description': os.environ['PLUGIN_DESCRIPTION'],
 }
-print(json.dumps(entry, indent=2))
+sys.stdout.buffer.write(json.dumps(entry, indent=2, ensure_ascii=False).encode('utf-8'))
 ")
 
 echo "About to append the following entry to $MARKETPLACE_FILE:"
