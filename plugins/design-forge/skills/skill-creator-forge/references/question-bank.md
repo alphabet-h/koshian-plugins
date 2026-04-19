@@ -27,7 +27,8 @@ forge の Step 3（動的質問生成）で使うカテゴリ別質問パター�
 
 3. **出力フォーマット** (choice, required)
    - prompt: "生成物の形式"
-   - choices: [HTML, Markdown, SVG, PNG, JSON, Tailwind JSX/TSX, Vue SFC, プレーンテキスト, PDF 出力向け Markdown, docx 想定構造, 自由入力]
+   - choices: [プレーンテキスト, Markdown, PDF 出力向け Markdown, docx 想定構造, HTML, SVG, PNG, JSON, Tailwind JSX/TSX, Vue SFC, 自由入力]
+   - 注: 業種を問わない一般フォーマット（プレーンテキスト / Markdown / PDF / docx）を前方に置き、Web/IT 特化フォーマット（HTML / SVG / Tailwind 等）は後方。用途によって並びを入れ替えても OK。
 
 **任意**:
 
@@ -57,7 +58,8 @@ forge の Step 3（動的質問生成）で使うカテゴリ別質問パター�
 
 2. **採点方式** (choice, required)
    - prompt: "スコア形式"
-   - choices: ["S-F tier (Motion AI Kit 風)", "0-100 score", "pass-fail", "重大度ラベル (critical/warning/info)", "5 段階評価 (◎○△×✗)"]
+   - choices: ["0-100 score", "pass-fail", "重大度ラベル (critical/warning/info)", "5 段階評価 (◎○△×✗)", "S-F tier (Web アニメーション監査等、Motion AI Kit 風)"]
+   - 注: 前 4 択は業種非依存。S-F tier は元来 Web アニメーション監査由来で、非 IT では直感的でない可能性があるので末尾に配置。
 
 3. **ルール集ソース** (text, required)
    - prompt: "監査ルールの出処（URL / 既存ガイドライン / 自作）"

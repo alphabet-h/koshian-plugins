@@ -30,6 +30,12 @@ description: 「デザインスキルをフリー入力から作って」「テ�
 1. このスキルの絶対パスから `.../plugins/design-forge/` までを plugin root として抽出
 2. 以降のすべての bash コマンド / Glob で `<PLUGIN_ROOT>` をこの絶対パスに置換してから実行
 
+例: SKILL.md 上の `bash <PLUGIN_ROOT>/skills/skill-creator-forge/scripts/scaffold-plugin.sh` は、実際には以下のように実行する（パスはインストール環境によって変わる）:
+
+```bash
+bash "C:/Users/you/.claude/plugins/cache/.../design-forge/skills/skill-creator-forge/scripts/scaffold-plugin.sh"
+```
+
 ## Step 1: ペルソナ抽出（フリー入力）
 
 AskUserQuestion ではなく**普通の会話ターン**でユーザに尋ねる:
@@ -156,41 +162,52 @@ design-kit と完全共通。詳細は `references/output-targets.md`。
 
 ## Step 7: ファイル生成
 
-Step 4 で確定した構造に従い、各セクションを **answers を使って**埋める。
+Step 4 で確定した構造に従い、各セクションを **answers を使って**埋める。Claude が直接 Write tool で書き出すので、以下は生成するテキストの **literal なひな形**（ヘルパ関数呼び出しではなく、プレースホルダ位置と書くべき内容の指示）:
 
-典型的な生成パターン（概念、実際は Write tool で実装）:
-
-```python
-skill_md = f"""---
-name: {answers['skill_name']}
-description: {generate_description(answers, persona_text)}
+```
+---
+name: {answers.skill_name}
+description: {answers.skill_name} と persona_text から導出した 1-2 文の説明。
+              persona_text の語彙（業界用語含む）を可能な限り保ちつつ、
+              trigger_phrases / output_format / 監査対象 / ステップ列 等の
+              カテゴリ固有要素を簡潔に含める。80 字前後推奨。
 ---
 
-# {answers['skill_name']}
+# {answers.skill_name}
 
 ## 起動条件
 
 ユーザの発話に以下が含まれたら起動:
-- {answers['trigger_phrases']}
+- {answers.trigger_phrases}
 
 ## 入力
 
 典型的な入力:
-- {answers['input_examples']}
+- {answers.input_examples}
 
 ## 出力フォーマット
 
-{answers['output_format']} 形式で返す。
+{answers.output_format} 形式で返す。
 
 ## ワークフロー
 
-{generate_workflow_section(category, answers, industry_hint)}
+category と answers から 4-6 ステップを列挙。ひな形例:
+- Generator: 要件受領 → バリエーション検討 → 実装 → 自己点検 → 出力
+- Auditor:   対象読み取り → ルール照合 → 採点計算 → 修正案添付 → レポート出力
+- Process:   副作用前の確認 → 各ステップ実行 → 中断時のリカバリ分岐 → 完了報告
+- Hybrid:    構成サブスキルごとにセクションを分け、最後に「実行順序」セクション
+industry_hint があれば該当業種の補足セクション（建築=法改正追随 / 法律=引用フォーマット 等）を 1 つ差し込む。
 
 ## 失敗パターン
 
-{answers.get('anti_patterns', '（ユーザ入力から特定できず — 追加で編集推奨）')}
-"""
+{answers.anti_patterns があればそれをリスト化。無ければ
+ '（ユーザ入力から特定できず — ユーザが後で追記推奨）' と note。}
 ```
+
+**注記**:
+- `{...}` はテキストそのものではなく**埋めるべき内容の指示**。実装時にはプレースホルダの位置に answers から取った値 or 上記指示に従って合成した文字列を流し込む。
+- 分類外の answers（`reference` / `brand_tokens` 等）はカテゴリ別構造の末尾に「補足情報」セクションとして追加する。
+- プレースホルダ置換後、生成された SKILL.md は必ずユーザに**フルテキスト表示**してから書き出すこと（forge は LLM 推測が多いため、ユーザの目視機会を必ず挟む）。
 
 **reference 処理**: Step 3 で URL / 画像パスが指定されていたら、WebFetch or Read でローカルに取り込んで `references/` ディレクトリに保存。PDF や画像等 WebFetch で取れないものはパスだけ記録してユーザに「手動で references/ に配置してください」と案内。
 
