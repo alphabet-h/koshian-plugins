@@ -70,17 +70,18 @@ if [ -z "${DRY_RUN_AUTO_CONFIRM:-}" ]; then
 fi
 
 # Append. Read from stdin and write to a tmpfile (avoids passing Windows/Git Bash paths into Python).
+# Force UTF-8 encoding on stdio to preserve multibyte characters (e.g., em-dash, CJK) in existing entries.
 TMPFILE="$MARKETPLACE_FILE.tmp"
-PLUGIN_NAME="$PLUGIN_NAME" PLUGIN_SOURCE="$PLUGIN_SOURCE" PLUGIN_DESCRIPTION="$PLUGIN_DESCRIPTION" python -c "
+PYTHONIOENCODING=utf-8 PLUGIN_NAME="$PLUGIN_NAME" PLUGIN_SOURCE="$PLUGIN_SOURCE" PLUGIN_DESCRIPTION="$PLUGIN_DESCRIPTION" python -c "
 import json, sys, os
-data = json.load(sys.stdin)
+data = json.loads(sys.stdin.buffer.read().decode('utf-8'))
 data['plugins'].append({
     'name': os.environ['PLUGIN_NAME'],
     'source': os.environ['PLUGIN_SOURCE'],
     'description': os.environ['PLUGIN_DESCRIPTION'],
 })
-json.dump(data, sys.stdout, indent=2)
-sys.stdout.write('\n')
+out = json.dumps(data, indent=2, ensure_ascii=False) + '\n'
+sys.stdout.buffer.write(out.encode('utf-8'))
 " < "$MARKETPLACE_FILE" > "$TMPFILE"
 
 mv "$TMPFILE" "$MARKETPLACE_FILE"
