@@ -1,0 +1,10 @@
+---
+score: 0.92
+path: pitfall/2026-04-20-axum-state-rc.md
+---
+## 症状
+Rc<Config> is not Send
+
+## 最短解決手順
+Arc<Config> を使う
+---
