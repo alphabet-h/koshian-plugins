@@ -6,16 +6,13 @@
 #   intent.sh resolve  "<text>"     → exit 0 if resolution signal hit
 #   intent.sh negated  "<text>"     → exit 0 if negation filter hit (cancel resolve)
 #
-# Exit codes: 0 = match, 1 = no match, 2 = skip (input too short)
+# Exit codes: 0 = match, 1 = no match
+# (No length gating here. Short-input skip happens at the hook layer.)
 
 set -euo pipefail
 
 kind="${1:-}"
 text="${2:-}"
-
-if [ "${#text}" -lt 10 ] && [ "$kind" = "inject" ]; then
-  exit 2
-fi
 
 case "$kind" in
   inject)

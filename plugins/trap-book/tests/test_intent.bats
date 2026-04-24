@@ -37,7 +37,7 @@ teardown() { teardown_common; }
   done < "${BATS_TEST_DIRNAME}/fixtures/intent/negation.txt"
 }
 
-@test "intent: short input skips all checks" {
+@test "intent: short word without keyword returns no match" {
   run bash "${TRAP_BOOK_ROOT}/lib/intent.sh" inject "short"
-  [ "$status" -eq 2 ]
+  [ "$status" -eq 1 ]
 }
