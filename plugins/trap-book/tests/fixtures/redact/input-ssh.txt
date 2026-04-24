@@ -1,0 +1,4 @@
+-----BEGIN RSA PRIVATE KEY-----
+AAAAB3NzaC1yc2E...
+-----END RSA PRIVATE KEY-----
+plain

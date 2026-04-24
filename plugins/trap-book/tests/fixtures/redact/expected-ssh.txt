@@ -1,0 +1,4 @@
+[REDACTED:private_key]
+AAAAB3NzaC1yc2E...
+-----END RSA PRIVATE KEY-----
+plain
