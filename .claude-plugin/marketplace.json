@@ -26,6 +26,11 @@
       "name": "design-forge",
       "source": "./plugins/design-forge",
       "description": "Free-form Q&A driven creator for design-focused Claude Code skills — any industry (IT and non-IT). Sister of design-kit."
+    },
+    {
+      "name": "trap-book",
+      "source": "./plugins/trap-book",
+      "description": "Self-learning pitfall/strategy knowledge base. Claude auto-extracts lessons from failure→resolution sessions and injects relevant traps on implement-intent prompts. Powered by kb-mcp."
     }
   ]
 }
