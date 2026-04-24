@@ -13,7 +13,7 @@ set -euo pipefail
 kind="${1:-}"
 text="${2:-}"
 
-if [ "$text" = "short" ] && [ "$kind" = "inject" ]; then
+if [ "${#text}" -lt 10 ] && [ "$kind" = "inject" ]; then
   exit 2
 fi
 
