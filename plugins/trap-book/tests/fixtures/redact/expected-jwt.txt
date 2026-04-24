@@ -1,0 +1,3 @@
+Authorization: [REDACTED:bearer]
+token=[REDACTED:jwt]
+plain token

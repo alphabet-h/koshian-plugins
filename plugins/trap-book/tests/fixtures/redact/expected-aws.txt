@@ -1,0 +1,3 @@
+key=[REDACTED:aws_access_key]
+secret=wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
+ok

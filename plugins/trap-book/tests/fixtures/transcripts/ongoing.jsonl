@@ -1,0 +1,3 @@
+{"role":"user","content":"axum で Rc が Send エラー"}
+{"role":"assistant","content":"Arc<T> に変えてみてください"}
+{"role":"user","content":"どうやって変えるの？"}

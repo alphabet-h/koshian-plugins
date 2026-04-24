@@ -1,0 +1,11 @@
+{
+  "name": "trap-book",
+  "version": "0.1.0",
+  "description": "Self-learning pitfall/strategy knowledge base. Claude auto-extracts lessons from failure→resolution sessions, dedupes via kb-mcp semantic search, and injects relevant traps on the next implement-intent prompt.",
+  "author": {
+    "name": "koshian"
+  },
+  "repository": "https://github.com/alphabet-h/koshian-plugins",
+  "keywords": ["memory", "self-learning", "kb-mcp", "pitfall", "strategy"],
+  "autoDiscover": true
+}

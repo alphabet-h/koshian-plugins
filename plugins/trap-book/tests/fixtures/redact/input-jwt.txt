@@ -1,0 +1,3 @@
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIn0.sig-here-abc
+token=eyJaaa.bbbbb.cccc
+plain token
