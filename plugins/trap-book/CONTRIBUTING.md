@@ -20,7 +20,7 @@ bats tests/
 
 ## Adding Fixtures
 
-To extend intent detection or redaction coverage, add lines to the appropriate fixture and re-run bats — no code change needed:
+Once the lib tasks land (Task 3 redact, Task 4 intent), you can extend coverage by editing fixture files — no code change needed:
 
 - `tests/fixtures/intent/positive.txt` — one per line, lines that MUST trigger inject intent
 - `tests/fixtures/intent/negative.txt` — one per line, lines that must NOT trigger
