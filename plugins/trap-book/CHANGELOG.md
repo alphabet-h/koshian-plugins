@@ -4,6 +4,12 @@ All notable changes to trap-book are documented here. Format: Keep a Changelog. 
 
 ## [Unreleased]
 
+### Fixed
+- `skills/trap-book.md` was a flat file directly under `skills/`, which Claude Code does not
+  auto-discover (that layout is for `commands/`; `skills/` requires `<name>/SKILL.md`).
+  The skill was therefore never loaded — only the commands and the subagent were.
+  Moved to `skills/trap-book/SKILL.md`.
+
 ## [0.1.0] - 2026-04-24
 
 ### Added
