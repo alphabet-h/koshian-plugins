@@ -31,6 +31,11 @@
       "name": "trap-book",
       "source": "./plugins/trap-book",
       "description": "Self-learning pitfall/strategy knowledge base. Claude auto-extracts lessons from failure→resolution sessions and injects relevant traps on implement-intent prompts. Powered by kb-mcp."
+    },
+    {
+      "name": "feature-ideation",
+      "source": "./plugins/feature-ideation",
+      "description": "機能アイデアを広く出して vault に貯め、効果・難易度・制約整合でタグ付けし優先度を可視化する。深掘り・状態確認・アーカイブまでを一連で扱う。"
     }
   ]
 }
