@@ -4,6 +4,17 @@ All notable changes to feature-ideation are documented here. Format: Keep a Chan
 
 ## [Unreleased]
 
+## [0.1.1] - 2026-08-16
+
+v0.1.0 の E2E で見つかった 2 件の修正。
+
+### Fixed
+- `${CLAUDE_EFFORT}` は値に置換されるため、`feature-ideation` の SKILL.md 2 箇所が
+  「xhigh が xhigh / max のときは」という壊れた文でロードされていた。
+  値をデータとして読ませる書き方に変更した。
+- `check` の SKILL.md に置いていた HTML コメントを削除した。本文としてロードされ、
+  起動のたびにトークンを消費していた。内容は CONTRIBUTING.md へ移した。
+
 ## [0.1.0] - 2026-08-16
 
 `~/.claude/skills/feature-ideation/` で運用していたローカルスキルをプラグイン化した初回リリース。
@@ -39,7 +50,22 @@ All notable changes to feature-ideation are documented here. Format: Keep a Chan
 - bash（Windows では Git Bash）。`idea-check` の集計スクリプトが依存する。
 
 ### Notes
-- `idea-check` の SKILL.md 本文では `${CLAUDE_SKILL_DIR}` を使用している。design-kit で採った
+- `check` の SKILL.md 本文では `${CLAUDE_PLUGIN_ROOT}` を使用している。design-kit で採った
   `<PLUGIN_ROOT>` プレースホルダ方式は、現行仕様では不要（skill 本文と `allowed-tools` の
-  Bash ルールの両方で置換されることが公式に文書化されている）。
+  Bash ルールの両方で置換されることが公式に文書化されており、E2E で実際に展開を確認した）。
 - v0.1 の期限検出は新形式の再評価キューのみを対象とする。旧 vault の散文期限は拾わない。
+
+### Verified
+2026-08-16、`koshian-plugins` からインストールして claude-plugins リポジトリ自身に対して E2E を実施。
+
+- スキル 2 個（`feature-ideation` / `check`）が一覧に登録されること
+- 引数なし起動で 6 ステップが走り、step 5 で `AskUserQuestion` が出ること
+- 新テンプレートで vault が生成されること（29 件、PARSE WARNINGS 0）
+- **`check` のコンテキスト注入が成立すること** — digest が本文に埋まり、`${CLAUDE_PLUGIN_ROOT}` が
+  展開され、権限プロンプトが出ないこと
+- 件数が実数と一致すること（カテゴリ別・状態別・効果別・制約別すべて整合）
+- `frozen` を期限切れと混同せず別枠で報告すること
+
+未達 1 件: **description による自動発火**。46 スキルが登録された環境では skill listing の予算を
+超過し、新規インストール直後のスキルから description が落とされるため、自然な発話では発火しなかった。
+リポジトリ側で取れる対策は description を短く保つことのみ。
