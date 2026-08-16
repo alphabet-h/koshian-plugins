@@ -272,7 +272,10 @@ function row(line,  n,p,last,nf,id,st,nm,im,df,cs,nt,due,ov,proof,lesson,rsn,rev
 
   # ttype == "cat"
   id=cell(p,"id")
-  if(id !~ /^FI-[0-9][0-9][0-9]/) return
+  if(id !~ /^FI-[0-9][0-9][0-9]/){
+    # 旧形式 (A-1 等) の ID。集計対象外だが、黙って 0 件と報告すると原因が伝わらない。
+    if(id ~ /^[A-Za-z][A-Za-z]?-[0-9]+$/) legacy++
+    return }
   st=cell(p,"status"); nm=cell(p,"name")
   im=cell(p,"impact"); df=cell(p,"diff"); cs=cell(p,"cons"); nt=cell(p,"note")
   if(st==""){ st="(none)"; printf "WARN\t%s: 状態が空です\n", id }
@@ -291,7 +294,11 @@ function row(line,  n,p,last,nf,id,st,nm,im,df,cs,nt,due,ov,proof,lesson,rsn,rev
   if(st=="frozen") printf "FROZEN\t%s\t%s\n", id, nm
 }
 
-END{ printf "K\tdone_total\t%d\nK\tdecl_total\t%d\n", doneN, declN }
+END{
+  printf "K\tdone_total\t%d\nK\tdecl_total\t%d\n", doneN, declN
+  if(legacy>0)
+    printf "K\tlegacy_rows\t%d\n", legacy
+}
 ' "$VAULT" 2>/dev/null)"
 
 pick() { printf '%s\n' "$IDX" | awk -F'\t' -v OFS='\t' -v t="$1" '$1==t{ $1=""; sub(/^\t/,""); print }'; }
@@ -460,6 +467,11 @@ if [ -n "$DETAIL" ]; then echo "detail_dir: $DETAIL ($DETAIL_N md)"; else echo "
 
 section "COUNTS"
 echo "open_total: $(pick ROW | grep -c .)"
+LEGACY="$(kv K legacy_rows)"
+if [ -n "$LEGACY" ]; then
+  echo "legacy_rows: $LEGACY"
+  echo "legacy_note: 旧形式の ID (A-1 等) の行が $LEGACY 件あります。この digest は FI-NNN 形式のみを集計するため、上の件数には含まれていません。移行が必要です。"
+fi
 echo "ledger_done: ${DONE_TOTAL:-0}"
 echo "ledger_declined: ${DECL_TOTAL:-0}"
 pick CATCOUNT | sort | uniq -c | awk '{c=$1; $1=""; sub(/^ /,""); printf "by_cat\t%s\t%d\n",$0,c}'

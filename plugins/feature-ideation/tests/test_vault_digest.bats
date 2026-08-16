@@ -13,7 +13,7 @@ teardown() { teardown_common; }
 # スキル起動ごと abort するため、どの入力でも exit 0 を返さなければならない。
 
 @test "契約: 全 fixture で exit 0 かつ END DIGEST で終わる" {
-  for f in normal empty no-vault overdue broken foreign crlf xref; do
+  for f in normal empty no-vault overdue broken foreign crlf xref legacy; do
     run digest_in "$f" .
     [ "$status" -eq 0 ] || { echo "fixture=$f exit=$status"; return 1; }
     echo "$output" | tail -1 | grep -qF '=== END DIGEST ===' \
@@ -82,6 +82,13 @@ teardown() { teardown_common; }
   run digest_in empty .
   assert_success_output
   assert_contains "open_total: 0"
+}
+
+@test "パース: 旧形式の ID しか無い vault は 0 件ではなく理由を報告する" {
+  run digest_in legacy .
+  assert_success_output
+  assert_contains "legacy_rows: 2"
+  assert_contains "移行が必要です"
 }
 
 @test "パース: 区切り行のない表は読まない" {
