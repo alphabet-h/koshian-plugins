@@ -431,10 +431,14 @@ if [ -z "${FEATURE_IDEATION_NO_XREF:-}" ]; then
     # 必ず feature-idea(s) の修飾つきのみを拾う。
     RAW="$(grep -rInE --include='*.md' \
       "(feature[-_ ]?idea[s]?)[^A-Za-z0-9]{0,30}$ID_RE_ERE" $SCOPE 2>/dev/null | head -60)"
+    # index に載っている ID = 突合が要る対象。台帳 2 表の ID は既に閉じているので
+    # 突合の必要がなく、報告もしない (未知の ID だけが dangling)。
     KNOWN="$(pick IDSEEN | sort -u | tr '\n' ' ')"
-    XALL="$(printf '%s\n' "$RAW" | awk -F: -v known="$KNOWN" \
+    CLOSED="$( { pick DONEID | cut -f1; pick DECLID | cut -f1; } | sort -u | tr '\n' ' ')"
+    XALL="$(printf '%s\n' "$RAW" | awk -F: -v known="$KNOWN" -v closed="$CLOSED" \
         -v xre="$XREF_RE_AWK" -v xtail="$XREF_TAIL_AWK" "$AWKLIB"'
-      BEGIN{ n=split(known,a," "); for(i=1;i<=n;i++) k[a[i]]=1 }
+      BEGIN{ n=split(known,a," "); for(i=1;i<=n;i++) k[a[i]]=1
+             m=split(closed,b," "); for(i=1;i<=m;i++) c[b[i]]=1 }
       NF>=3 {
         file=$1; ln=$2; rest=$0; sub(/^[^:]*:[0-9]+:/,"",rest)
         s=rest
@@ -442,6 +446,7 @@ if [ -z "${FEATURE_IDEATION_NO_XREF:-}" ]; then
           seg=substr(s,RSTART,RLENGTH); s=substr(s,RSTART+RLENGTH)
           if(match(seg,xtail)){
             id=substr(seg,RSTART)
+            if(id in c) continue
             key=id SUBSEP file SUBSEP ln
             if(!seen[key]++)
               printf "%s\t%s\t%s:%s\t%s\n",(id in k?"XREF":"DANGLING"),id,file,ln,clean(substr(rest,1,150)) } } }')"
@@ -470,9 +475,10 @@ PICK_TRIGGER	T1	前回ピック ($PICK_DATE) から ${PAGE}日経過" ;;
     [ "$NP" -gt 0 ] && [ $((NC*2)) -gt "$NP" ] && PICK_TRIG="$PICK_TRIG
 PICK_TRIGGER	T2	ピック ${NP}件のうち ${NC}件が完了/却下済み (過半数)"
   fi
-  # T4: ピックに載っていない ID が実装済み台帳に入った
+  # T4: 前回ピック以降に、ピックに載っていない ID が実装済み台帳に入った。
+  # 完了日でフィルタしないと、移行直後や台帳が育った vault で常に発火してしまう。
   T4=""
-  for i in $(pick DONEID | cut -f1); do
+  for i in $(pick DONEID | awk -F'\t' -v pd="$PICK_DATE" '$2>pd{print $1}'); do
     printf '%s\n' "$PICK_IDS" | grep -qxF "$i" || T4="$T4 $i"
   done
   [ -n "$T4" ] && PICK_TRIG="$PICK_TRIG

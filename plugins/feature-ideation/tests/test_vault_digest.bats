@@ -65,7 +65,7 @@ teardown() { teardown_common; }
   run digest_in normal .
   assert_success_output
   assert_contains "open_total: 4"
-  assert_contains "ledger_done: 1"
+  assert_contains "ledger_done: 2"
   assert_contains "ledger_declined: 1"
   assert_contains "$(printf 'by_cat\t検索精度の強化\t2')"
   assert_contains "$(printf 'by_status\tprobing\t1')"

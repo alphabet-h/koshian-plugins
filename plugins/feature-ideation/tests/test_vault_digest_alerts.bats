@@ -164,11 +164,29 @@ teardown() { teardown_common; }
 
 # ------------------------------------------------------ 優先度ピック改訂 ----
 
-@test "ピック: 台帳にピック外の ID があれば T4 を出す" {
+@test "ピック: 前回ピック以降に完了したピック外の ID で T4 を出す" {
   run digest_in normal .
   assert_success_output
   assert_contains "PICK_TRIGGER	T4"
-  assert_contains "FI-004"
+  section_of "PICK TRIGGER" | grep -q "FI-004"
+}
+
+@test "ピック: 前回ピックより前に完了した台帳行では T4 を出さない" {
+  run digest_in normal .
+  assert_success_output
+  section_of "PICK TRIGGER" | grep -q "FI-007" && {
+    echo "ピック日より前の完了で T4 を発火させています"; return 1; }
+  return 0
+}
+
+@test "外部参照: 台帳にある ID は突合の対象にしない" {
+  FEATURE_IDEATION_NO_XREF= run digest_in xref .
+  assert_success_output
+  section_of "ALERT: EXTERNAL MENTION" | grep -q "FI-005" && {
+    echo "台帳にある ID を XREF に出しています"; return 1; }
+  section_of "ALERT: DANGLING ID" | grep -q "FI-005" && {
+    echo "台帳にある ID を DANGLING に出しています"; return 1; }
+  return 0
 }
 
 @test "ピック: ピックが無い vault ではトリガを出さない" {
