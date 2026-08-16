@@ -92,11 +92,9 @@ _やり忘れの回収。最終確認 2026-08-16_
 
 | ID | 状態 | 名前 | 効果 | 難易度 | 制約 | 備考 |
 |---|:-:|---|:-:|:-:|:-:|---|
-| FI-022 | planned | trap-book v0.1.1 リリース | 大 | 低 | ✅ | 修正は master に入ったが version 据え置きのため配布されない。作業は bump と CHANGELOG のみ |
 | FI-023 | idea | claude-nfd と harness-kit にテストを入れる | 中 | 中 | ✅ | この 2 つだけテスト 0 |
 | FI-024 | idea | design-kit と design-forge のドッグフーディング | 中 | 低 | ✅ | 両方とも未インストール。使っていないプラグインは腐る |
 | FI-025 | idea | feature-ideation v0.2 の SessionStart hook | 大 | 中 | ✅ | 「check が呼ばれないと期限に誰も気づかない」への唯一の構造的解 |
-| FI-029 | idea | feature-ideation の CLAUDE_EFFORT 参照を修正 | 中 | 低 | ✅ | 値に置換されるため「xhigh が xhigh のとき」という壊れた文になっていた。SKILL.md の 2 箇所 |
 
 ## 研究的 / プラグイン間連携
 _単体では出てこない方向。最終確認 2026-08-16_
@@ -155,6 +153,8 @@ _単体では出てこない方向。最終確認 2026-08-16_
 
 | ID | 名前 | 完了日 | 証跡 | 知見 |
 |---|---|---|---|---|
+| FI-029 | feature-ideation の CLAUDE_EFFORT 参照を修正 | 2026-08-16 | feature-ideation/v0.1.1 / 7dcfd7e | 置換変数は値になる。変数名として画面に出る前提の文は成立しない。同じ罠が `${CLAUDE_PLUGIN_ROOT}` にもある |
+| FI-022 | trap-book v0.1.1 リリース | 2026-08-16 | trap-book/v0.1.1 / 8941d7e | 起票時の想定どおり version 据え置きでは配布されなかった。加えて `claude plugin update` は `name@marketplace` 形式でないと not found になる |
 
 - **`証跡` は空欄禁止**。PR 番号 / タグ・version / commit / ADR のいずれかを最低 1 つ
 - **`知見` は空欄禁止**。特に**起票時の想定が外れた点**を残す
@@ -199,4 +199,5 @@ _単体では出てこない方向。最終確認 2026-08-16_
 
 ## 変更履歴
 
+- **2026-08-16**: FI-029 と FI-022 を実装済み台帳へ移送（同日中に完了）。open 27 件
 - **2026-08-16**: 初版。6 カテゴリ 29 件を起票。feature-ideation v0.1.0 の E2E を兼ねて作成した
