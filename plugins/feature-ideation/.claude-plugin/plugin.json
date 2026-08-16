@@ -1,6 +1,6 @@
 {
   "name": "feature-ideation",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "機能アイデアを広く出して vault に貯め、効果・難易度・制約整合でタグ付けし優先度を可視化するスキル。深掘り・状態確認・アーカイブまでを一連で扱う。",
   "author": {
     "name": "koshian"

@@ -161,9 +161,41 @@ VLC="$(last_change "$VAULT")"
 VLC_DATE="$(printf '%s' "$VLC" | cut -f1)"
 VLC_SRC="$(printf '%s' "$VLC" | cut -f2)"
 
+# ----------------------------------------------------------- ID の形式 -----
+# vault frontmatter の id_style で ID の形を切り替える。
+#   prefixed (既定) : FI-001 形式。カテゴリ非依存の通し番号
+#   categorical     : A-1 形式。カテゴリ文字 + 連番。旧形式の vault を、ID を付け替えずに
+#                     移行するためのもの。既存の外部参照を壊さずに済む
+# awk へ渡す正規表現は動的正規表現として解釈されるので、バックスラッシュを二重にしてある。
+ID_STYLE="$(head -15 "$VAULT" 2>/dev/null | grep -m1 '^id_style:' \
+  | sed 's/^id_style:[[:space:]]*//; s/#.*//; s/["'"'"']//g; s/[[:space:]]*$//')"
+case "$ID_STYLE" in
+  categorical)
+    ID_RE_AWK='^[A-Za-z][A-Za-z]?-[0-9]+$'
+    ID_RE_ERE='[A-Za-z]{1,2}-[0-9]{1,3}'
+    LINK_RE_AWK='\\]\\([^)]*[A-Za-z][A-Za-z]?-[0-9]'
+    XREF_RE_AWK='(feature[-_ ]?idea[s]?)[^A-Za-z0-9]{0,30}[A-Za-z][A-Za-z]?-[0-9]+'
+    XREF_TAIL_AWK='[A-Za-z][A-Za-z]?-[0-9]+$'
+    NAME_RE_ERE='^([A-Za-z]{1,2}-[0-9]+|archive-[0-9]{4})'
+    ;;
+  *)
+    ID_STYLE="prefixed"
+    ID_RE_AWK='^FI-[0-9][0-9][0-9]'
+    ID_RE_ERE='FI-[0-9]{3}'
+    LINK_RE_AWK='\\]\\([^)]*FI-[0-9]'
+    XREF_RE_AWK='(feature[-_ ]?idea[s]?)[^A-Za-z0-9]{0,30}FI-[0-9][0-9][0-9]'
+    XREF_TAIL_AWK='FI-[0-9][0-9][0-9]$'
+    NAME_RE_ERE='^(FI-[0-9]{3}|archive-[0-9]{4})'
+    ;;
+esac
+
+# 詳細ディレクトリのファイル名が命名規約に沿っているか
+is_conforming_name() { printf '%s' "$1" | grep -qE "$NAME_RE_ERE"; }
+
 # ------------------------------------------------------------ index 解析 ----
 # 出力はタグ付きの中間レコード。bash 側で組み立てる。
-IDX="$(awk -v today="$TODAY" -v staled="$STALE_DAYS" "$AWKLIB"'
+IDX="$(awk -v today="$TODAY" -v staled="$STALE_DAYS" \
+        -v idre="$ID_RE_AWK" -v linkre="$LINK_RE_AWK" -v idstyle="$ID_STYLE" "$AWKLIB"'
 BEGIN{ SEP="^[ \t]*\\|[ \t:|-]+\\|?[ \t]*$"; tn=d2n(today); ttype="none" }
 { sub(/\r$/,"") }
 NR==1 && /^---[ \t]*$/ { fm=1; next }
@@ -253,7 +285,7 @@ function row(line,  n,p,last,nf,id,st,nm,im,df,cs,nt,due,ov,proof,lesson,rsn,rev
     return }
 
   if(ttype=="done"){
-    id=cell(p,"id"); if(id !~ /^FI-[0-9]/) return
+    id=cell(p,"id"); if(id !~ idre) return
     doneN++; proof=cell(p,"proof"); lesson=cell(p,"lesson"); miss=""
     if(proof=="" || proof ~ /^</) miss="証跡"
     if(lesson=="" || lesson ~ /^</) miss=(miss==""?"知見":miss"/知見")
@@ -262,7 +294,7 @@ function row(line,  n,p,last,nf,id,st,nm,im,df,cs,nt,due,ov,proof,lesson,rsn,rev
     return }
 
   if(ttype=="declined"){
-    id=cell(p,"id"); if(id !~ /^FI-[0-9]/) return
+    id=cell(p,"id"); if(id !~ idre) return
     declN++
     rsn=cell(p,"reason"); rev=cell(p,"revive")
     if(rsn=="" || rsn ~ /^</) printf "WARN\t不採用の記録 %s: 理由が空です\n", id
@@ -272,9 +304,10 @@ function row(line,  n,p,last,nf,id,st,nm,im,df,cs,nt,due,ov,proof,lesson,rsn,rev
 
   # ttype == "cat"
   id=cell(p,"id")
-  if(id !~ /^FI-[0-9][0-9][0-9]/){
-    # 旧形式 (A-1 等) の ID。集計対象外だが、黙って 0 件と報告すると原因が伝わらない。
-    if(id ~ /^[A-Za-z][A-Za-z]?-[0-9]+$/) legacy++
+  if(id !~ idre){
+    # 既定の prefixed 形式で categorical な ID を見つけたとき。集計対象外だが、
+    # 黙って 0 件と報告すると原因が伝わらないので件数を数えて後で案内する。
+    if(idstyle=="prefixed" && id ~ /^[A-Za-z][A-Za-z]?-[0-9]+$/) legacy++
     return }
   st=cell(p,"status"); nm=cell(p,"name")
   im=cell(p,"impact"); df=cell(p,"diff"); cs=cell(p,"cons"); nt=cell(p,"note")
@@ -287,7 +320,7 @@ function row(line,  n,p,last,nf,id,st,nm,im,df,cs,nt,due,ov,proof,lesson,rsn,rev
   if(length(nt)>200) printf "WARN\t%s: 備考が %d 字です (200 字を超えたら詳細ファイルへ)\n", id, length(nt)
   if(cs ~ /⚠/ && nt=="") printf "WARN\t%s: 制約が ⚠️ ですが備考に昇格条件がありません\n", id
 
-  printf "ROW\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n", id, st, im, df, cs, category, nm, (nt ~ /\]\([^)]*FI-[0-9]/ ? "yes":"no")
+  printf "ROW\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n", id, st, im, df, cs, category, nm, (nt ~ linkre ? "yes":"no")
   printf "CATCOUNT\t%s\n", category
   printf "STCOUNT\t%s\n", st
   printf "IDSEEN\t%s\n", id
@@ -306,7 +339,7 @@ kv()   { printf '%s\n' "$IDX" | awk -F'\t' -v k="$2" '$1=="K" && $2==k{print $3;
 
 # 優先度ピックに載っている ID (T2 / T4 判定用)
 PICK_IDS="$(sed -n '/^## 優先度ピック/,/^## /p' "$VAULT" 2>/dev/null \
-  | grep -oE 'FI-[0-9]{3}' | sort -u)"
+  | grep -oE "$ID_RE_ERE" | sort -u)"
 PICK_DATE="$(kv K pick_date)"
 LAST_SWEEP="$(kv K last_sweep)"
 DONE_TOTAL="$(kv K done_total)"; DECL_TOTAL="$(kv K decl_total)"
@@ -321,17 +354,16 @@ if [ -n "$DETAIL" ]; then
     [ -n "$f" ] || continue
     b="$(basename "$f")"
     is_foreign=0
-    # 命名規約: FI-... / archive-... 以外は異物
-    case "$b" in
-      FI-[0-9][0-9][0-9]*|archive-[0-9][0-9][0-9][0-9]*) ;;
-      *) is_foreign=1
-         kind="unknown"
-         if head -30 "$f" 2>/dev/null | grep -qE 'REQUIRED SUB-SKILL|^## Task [0-9]|^- \[ \] \*\*Step'; then kind="plan"
-         elif head -30 "$f" 2>/dev/null | grep -qE '取得日|設計仕様書|^## 未解決論点'; then kind="spec"
-         fi
-         FOREIGN="$FOREIGN
-FOREIGN	$f	$kind	$(grep -c '' "$f" 2>/dev/null)行" ;;
-    esac
+    # 命名規約 (id_style により FI-... か A-... ) と archive-... 以外は異物
+    if ! is_conforming_name "$b"; then
+      is_foreign=1
+      kind="unknown"
+      if head -30 "$f" 2>/dev/null | grep -qE 'REQUIRED SUB-SKILL|^## Task [0-9]|^- \[ \] \*\*Step'; then kind="plan"
+      elif head -30 "$f" 2>/dev/null | grep -qE '取得日|設計仕様書|^## 未解決論点'; then kind="spec"
+      fi
+      FOREIGN="$FOREIGN
+FOREIGN	$f	$kind	$(grep -c '' "$f" 2>/dev/null)行"
+    fi
     # 孤児判定は 1 hop (index + 他の詳細ファイル) で行う。
     # 異物として既に報告済みのファイルは重ねて報告しない。
     [ "$is_foreign" -eq 1 ] && continue
@@ -398,16 +430,17 @@ if [ -z "${FEATURE_IDEATION_NO_XREF:-}" ]; then
     # 素の ID を grep すると配列添字や版番号に大量ヒットするので、
     # 必ず feature-idea(s) の修飾つきのみを拾う。
     RAW="$(grep -rInE --include='*.md' \
-      '(feature[-_ ]?idea[s]?)[^A-Za-z0-9]{0,30}FI-[0-9]{3}' $SCOPE 2>/dev/null | head -60)"
+      "(feature[-_ ]?idea[s]?)[^A-Za-z0-9]{0,30}$ID_RE_ERE" $SCOPE 2>/dev/null | head -60)"
     KNOWN="$(pick IDSEEN | sort -u | tr '\n' ' ')"
-    XALL="$(printf '%s\n' "$RAW" | awk -F: -v known="$KNOWN" "$AWKLIB"'
+    XALL="$(printf '%s\n' "$RAW" | awk -F: -v known="$KNOWN" \
+        -v xre="$XREF_RE_AWK" -v xtail="$XREF_TAIL_AWK" "$AWKLIB"'
       BEGIN{ n=split(known,a," "); for(i=1;i<=n;i++) k[a[i]]=1 }
       NF>=3 {
         file=$1; ln=$2; rest=$0; sub(/^[^:]*:[0-9]+:/,"",rest)
         s=rest
-        while(match(s,/(feature[-_ ]?idea[s]?)[^A-Za-z0-9]{0,30}FI-[0-9][0-9][0-9]/)){
+        while(match(s,xre)){
           seg=substr(s,RSTART,RLENGTH); s=substr(s,RSTART+RLENGTH)
-          if(match(seg,/FI-[0-9][0-9][0-9]$/)){
+          if(match(seg,xtail)){
             id=substr(seg,RSTART)
             key=id SUBSEP file SUBSEP ln
             if(!seen[key]++)
@@ -470,7 +503,7 @@ echo "open_total: $(pick ROW | grep -c .)"
 LEGACY="$(kv K legacy_rows)"
 if [ -n "$LEGACY" ]; then
   echo "legacy_rows: $LEGACY"
-  echo "legacy_note: 旧形式の ID (A-1 等) の行が $LEGACY 件あります。この digest は FI-NNN 形式のみを集計するため、上の件数には含まれていません。移行が必要です。"
+  echo "legacy_note: カテゴリ依存の ID (A-1 等) の行が $LEGACY 件あります。この vault は id_style を宣言していないため FI-NNN 形式として扱われ、上の件数に含まれていません。ID を付け替えずに集計したい場合は frontmatter に id_style: categorical を書いてください。"
 fi
 echo "ledger_done: ${DONE_TOTAL:-0}"
 echo "ledger_declined: ${DECL_TOTAL:-0}"

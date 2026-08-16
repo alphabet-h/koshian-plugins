@@ -13,7 +13,7 @@ teardown() { teardown_common; }
 # スキル起動ごと abort するため、どの入力でも exit 0 を返さなければならない。
 
 @test "契約: 全 fixture で exit 0 かつ END DIGEST で終わる" {
-  for f in normal empty no-vault overdue broken foreign crlf xref legacy; do
+  for f in normal empty no-vault overdue broken foreign crlf xref legacy legacy-declared; do
     run digest_in "$f" .
     [ "$status" -eq 0 ] || { echo "fixture=$f exit=$status"; return 1; }
     echo "$output" | tail -1 | grep -qF '=== END DIGEST ===' \
@@ -84,11 +84,53 @@ teardown() { teardown_common; }
   assert_contains "open_total: 0"
 }
 
-@test "パース: 旧形式の ID しか無い vault は 0 件ではなく理由を報告する" {
+@test "パース: カテゴリ依存 ID の vault は 0 件ではなく理由とヒントを報告する" {
   run digest_in legacy .
   assert_success_output
   assert_contains "legacy_rows: 2"
-  assert_contains "移行が必要です"
+  assert_contains "id_style: categorical を書いてください"
+}
+
+# ------------------------------------------------------------- id_style ----
+# 既存 vault を ID を付け替えずに移行するための形式。外部参照を壊さずに済む。
+
+@test "id_style: categorical を宣言すればカテゴリ依存 ID が集計される" {
+  run digest_in legacy-declared .
+  assert_success_output
+  assert_contains "open_total: 3"
+  assert_contains "ledger_done: 1"
+  assert_contains "ledger_declined: 1"
+  assert_contains "$(printf 'row\tA-5\tidea')"
+}
+
+@test "id_style: categorical では旧形式の警告を出さない" {
+  run digest_in legacy-declared .
+  assert_success_output
+  assert_not_contains "legacy_rows"
+  assert_not_contains "legacy_note"
+}
+
+@test "id_style: categorical でも再評価キューと台帳が機能する" {
+  run digest_in legacy-declared .
+  assert_success_output
+  assert_contains "$(printf 'overdue\tA-9\t2026-08-01\t15日超過')"
+  section_of "ALERT: LEDGER INCOMPLETE" | grep -q "(none)"
+}
+
+@test "id_style: categorical では A-9-*.md を異物にしない" {
+  run digest_in legacy-declared .
+  assert_success_output
+  section_of "ALERT: DETAIL DIR" | grep -q "(none)"
+  assert_contains "detail_promoted: 1"
+}
+
+@test "id_style: categorical でも修飾のない素の ID は外部参照にしない" {
+  FEATURE_IDEATION_NO_XREF= run digest_in legacy-declared .
+  assert_success_output
+  assert_contains "$(printf 'XREF\tA-5')"
+  section_of "ALERT: EXTERNAL MENTION" | grep -q "配列の添字" && {
+    echo "修飾なしの ID を誤検出しています"; return 1; }
+  assert_contains "$(printf 'DANGLING\tZ-99')"
 }
 
 @test "パース: 区切り行のない表は読まない" {

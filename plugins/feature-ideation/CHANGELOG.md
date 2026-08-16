@@ -4,6 +4,26 @@ All notable changes to feature-ideation are documented here. Format: Keep a Chan
 
 ## [Unreleased]
 
+## [0.1.2] - 2026-08-16
+
+### Added
+- **`id_style: categorical`** — vault frontmatter に書くと `A-1` 形式のカテゴリ依存 ID を
+  そのまま集計できる。既存 vault を **ID を付け替えずに**新フォーマットへ移すためのもの。
+  詳細ファイル名の規約と外部参照の検出も同じ形式に追随する。
+  新規 vault では使わない（カテゴリ再編で ID とカテゴリが食い違う問題は `FI-NNN` でしか解決しない）。
+
+  実運用の vault で ID 付け替えコストを実測したところ、必須 156 箇所 / 12 ファイルだった。
+  公開リポのソースコード doc コメント、CHANGELOG の過去リリース記録、crates.io に出る
+  `Cargo.toml` の description を含み、さらに同じ `A-1` `D-11` という表記が 3 つの名前空間
+  （vault の feature ID / spec の設計判断 ID / audit の指摘 ID）で使われていて機械置換が
+  できなかった。スクリプト側を 9 箇所直すほうが安全で安く、移行税で利用者を弾かずに済む。
+
+### Changed
+- 宣言なしでカテゴリ依存 ID を見つけたときの警告に、`id_style: categorical` を宣言する
+  という解決方法を含めた。
+- 実装済み台帳の `証跡` / `知見` の空欄禁止は、**移行行には適用しない**旨をテンプレートに明記した。
+  当時の記録に学びが残っていないことがあるため。
+
 ## [0.1.1] - 2026-08-16
 
 v0.1.0 の E2E で見つかった 2 件の修正。
